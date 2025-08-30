@@ -12,3 +12,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+
+security:
+  jwt:
+    secret: "ae0d1c4bc64c43a798224f87721c5890909d59bdf186429a9c9ffc5c6356f5647e13a0975aa54d0880bccd"
+    duration: 60
+  admin:
+    secret: "$2a$10$H9c83bpIGYUkxmjh7WkLxuBUOj.v4SQ4cDELERm56fUxyR4lDK0wG"

@@ -1,9 +1,8 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.AdminRequest;
+import com.example.bankcards.dto.AuthResponse;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public interface UserService {
 
@@ -11,5 +10,5 @@ public interface UserService {
 
     User save(User user);
 
-    void requestAdmin(AdminRequest secret);
+    AuthResponse requestAdmin(AdminRequest secret);
 }

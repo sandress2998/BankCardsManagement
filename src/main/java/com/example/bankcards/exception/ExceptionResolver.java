@@ -36,6 +36,13 @@ public class ExceptionResolver {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        String message = ex.getMessage() != null ? ex.getMessage() : "Illegal argument";
+        ErrorResponse error = new ErrorResponse(message, HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleInternalError(RuntimeException ex) {
         String message = ex.getMessage() != null ? ex.getMessage() : "Not Found";

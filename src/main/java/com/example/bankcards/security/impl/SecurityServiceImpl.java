@@ -41,6 +41,10 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public AuthResponse signup(AuthRequest request) {
         String login = request.getLogin();
+        if (login.length() > 100) {
+            throw new UnauthorizedException("Login is too long. Login length must be less than 100 characters");
+        }
+
         String encodedPassword = PasswordEncoder.encodePassword(request.getPassword());
 
         if (userService.findByLogin(login) != null) {

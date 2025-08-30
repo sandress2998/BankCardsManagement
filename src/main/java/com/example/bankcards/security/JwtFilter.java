@@ -87,8 +87,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         public static Collection<? extends GrantedAuthority> mapRoleToAuthorities(User.Role role) {
             return switch (role) {
-                case ADMIN -> List.of(new SimpleGrantedAuthority("ADMIN"));
-                case USER -> List.of(new SimpleGrantedAuthority("USER"));
+                case ADMIN -> List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                case USER -> List.of(new SimpleGrantedAuthority("ROLE_USER"));
             };
         }
     }

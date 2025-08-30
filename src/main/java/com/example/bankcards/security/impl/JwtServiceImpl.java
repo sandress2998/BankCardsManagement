@@ -2,11 +2,10 @@ package com.example.bankcards.security.impl;
 
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UnauthorizedException;
+import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,24 +13,25 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     private final SecretKey secretKey;
 
     private final Long duration;
 
     public JwtServiceImpl(
-        UserService userService,
+        UserRepository userRepository,
         @Value("${security.jwt.secret}") String secretString,
         @Value("${security.jwt.duration}") Long duration
     ) {
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
         this.duration = duration;
     }
@@ -54,26 +54,53 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public User validateToken(String token) {
         Claims claims = extractClaims(token);
+
         String login = claims.getSubject();
-        User user = userService.findByLogin(login);
+        User user = userRepository.findByLogin(login);
 
         if (user == null) {
             throw new UnauthorizedException("User with login " + login + " not found");
         }
 
-        if (claims.getExpiration().before(new Date())) {
-            throw new UnauthorizedException("Token is expired");
-        }
-
         return user;
     }
 
+    @Override
+    public String changeRoleInJwt(String token, User.Role role) {
+        Claims originalClaims = extractClaims(token);
+        Map<String, Object> claimMap = new HashMap<>(originalClaims);
+        claimMap.put("role", role.toString());
+
+        return Jwts.builder()
+                .claims(claimMap)
+                .signWith(secretKey)
+                .compact();
+    }
+
     private Claims extractClaims(String token) {
-        return Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
+        Claims claims;
+
+        try {
+            claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        } catch (ExpiredJwtException ex) {
+            throw new UnauthorizedException("Token is expired");
+        } catch (UnsupportedJwtException ex) {
+            throw new UnauthorizedException("Token is not supported");
+        } catch (MalformedJwtException ex) {
+            throw new UnauthorizedException("Token is malformed");
+        } catch (SignatureException ex) {
+            throw new UnauthorizedException("Token signature is invalid");
+        } catch (IllegalArgumentException ex) {
+            throw new UnauthorizedException("Token invalid");
+        } catch (io.jsonwebtoken.io.DecodingException ex) {
+            throw new UnauthorizedException("Token decoding error");
+        }
+
+        return claims;
     }
 }
 

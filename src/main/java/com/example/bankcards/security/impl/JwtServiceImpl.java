@@ -4,7 +4,6 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
-import com.example.bankcards.service.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 @Service
@@ -42,7 +42,7 @@ public class JwtServiceImpl implements JwtService {
         Date expiration = new Date(now.getTime() + duration * 60 * 1000);
 
         JwtBuilder builder = Jwts.builder()
-            .claim("sub", user.getLogin())
+            .claim("sub", user.getId().toString())
             .claim("role", user.getRole())
             .claim("iat", now.getTime() / 1000)
             .claim("exp", expiration.getTime() / 1000)
@@ -55,11 +55,11 @@ public class JwtServiceImpl implements JwtService {
     public User validateToken(String token) {
         Claims claims = extractClaims(token);
 
-        String login = claims.getSubject();
-        User user = userRepository.findByLogin(login);
+        String id = claims.getSubject();
+        User user = userRepository.findUserById(UUID.fromString(id));
 
         if (user == null) {
-            throw new UnauthorizedException("User with login " + login + " not found");
+            throw new UnauthorizedException("User not found");
         }
 
         return user;

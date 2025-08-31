@@ -8,7 +8,7 @@ import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.security.SecurityService;
 import com.example.bankcards.service.UserService;
-import com.example.bankcards.util.PasswordEncoder;
+import com.example.bankcards.util.BCryptEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,13 +24,13 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public AuthResponse signin(AuthRequest request) {
-        String password = request.getPassword();
-        String login = request.getLogin();
+        String password = request.password();
+        String login = request.login();
         User user = userService.findByLogin(login);
 
         if (user == null) {
             throw new NotFoundException("User with login " + login + " not found");
-        } else if (!PasswordEncoder.matches(password, user.getPassword())) {
+        } else if (!BCryptEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("Wrong password");
         }
 
@@ -40,12 +40,12 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public AuthResponse signup(AuthRequest request) {
-        String login = request.getLogin();
+        String login = request.login();
         if (login.length() > 100) {
             throw new UnauthorizedException("Login is too long. Login length must be less than 100 characters");
         }
 
-        String encodedPassword = PasswordEncoder.encodePassword(request.getPassword());
+        String encodedPassword = BCryptEncoder.encodePassword(request.password());
 
         if (userService.findByLogin(login) != null) {
             throw new UnauthorizedException("User with such login already exists");

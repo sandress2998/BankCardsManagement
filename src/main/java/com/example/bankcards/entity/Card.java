@@ -10,15 +10,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 public class Card {
-    @Value("${card.months-until-expires}")
-    private static int monthsQuantityUntilExpires;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String number;
+    @Column(name = "encrypted_number", nullable = false, unique = true)
+    private String encryptedNumber;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
@@ -33,45 +30,71 @@ public class Card {
     @Column(nullable = false)
     private long balance = 0L;
 
+    @OneToOne(mappedBy = "card", optional = false, cascade = CascadeType.ALL)
+    private CardEncryptionKey encryptionKey;
+
     public Card() {}
 
-    public Card(
-        User owner
-    ) {
+    public Card(User owner, String encryptedNumber, LocalDate validityPeriod) {
         this.owner = owner;
-        this.number = getRandomNumber() + getRandomNumber() + getRandomNumber() + getRandomNumber();
-        this.validityPeriod = setValidityPeriod(monthsQuantityUntilExpires);
+        this.encryptedNumber = encryptedNumber;
+        this.validityPeriod = validityPeriod;
         this.status = Status.ACTIVE;
     }
 
-    enum Status {
+    public UUID getId() {
+        return id;
+    }
+
+    public String getEncryptedNumber() {
+        return encryptedNumber;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public LocalDate getValidityPeriod() {
+        return validityPeriod;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public long getBalance() {
+        return balance;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setValidityPeriod(LocalDate validityPeriod) {
+        this.validityPeriod = validityPeriod;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setBalance(long balance) {
+        this.balance = balance;
+    }
+
+    public void setEncryptionKey(CardEncryptionKey encryptionKey) {
+        this.encryptionKey = encryptionKey;
+    }
+
+    public void setEncryptedNumber(String encryptedNumber) {
+        this.encryptedNumber = encryptedNumber;
+    }
+
+    public CardEncryptionKey getEncryptionKey() {
+        return encryptionKey;
+    }
+
+    public enum Status {
         ACTIVE, BLOCKED, EXPIRED
-    }
-
-    // ПЕРЕНЕСТИ В SERVICE
-    public static LocalDate setValidityPeriod(int monthsQuantity) {
-        LocalDate today = LocalDate.now();
-        LocalDate targetMonth = today.plusMonths(monthsQuantity);
-
-        return targetMonth.with(TemporalAdjusters.lastDayOfMonth());
-    }
-
-    // ПЕРЕНЕСТИ В SERVICE
-    public boolean isBalanceUpdateCorrect(long sum) {
-        long newBalance;
-        if (balance > Long.MAX_VALUE - sum) {
-            throw new IllegalArgumentException("Balance is too high");
-        }
-        newBalance = balance + sum;
-        if (newBalance < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
-        }
-        return true;
-    }
-
-    /** Возвращает случайное число от 0 до 9999 */
-    private String getRandomNumber() {
-        int randomNumber = ThreadLocalRandom.current().nextInt(0, 10000);
-        return String.format("%04d", randomNumber);
     }
 }

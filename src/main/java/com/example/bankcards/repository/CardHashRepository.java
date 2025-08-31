@@ -7,5 +7,7 @@ import java.util.UUID;
 
 public interface CardHashRepository extends JpaRepository<CardHash, UUID> {
     boolean existsByHmacHash(String hmacHash);
+
+    void deleteByHmacHash(String hmacHash);
 }
 

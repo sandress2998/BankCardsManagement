@@ -28,7 +28,7 @@ public class Card {
     private Status status;
 
     @Column(nullable = false)
-    private long balance = 0L;
+    private double balance = 0;
 
     @OneToOne(mappedBy = "card", optional = false, cascade = CascadeType.ALL)
     private CardEncryptionKey encryptionKey;
@@ -62,7 +62,7 @@ public class Card {
         return status;
     }
 
-    public long getBalance() {
+    public double getBalance() {
         return balance;
     }
 
@@ -96,5 +96,9 @@ public class Card {
 
     public enum Status {
         ACTIVE, BLOCKED, EXPIRED
+    }
+
+    public enum Action {
+        ACTIVATE, BLOCK
     }
 }

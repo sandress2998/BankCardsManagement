@@ -1,5 +1,6 @@
 package com.example.bankcards.exception;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +22,13 @@ public class ExceptionResolver {
         String message = ex.getMessage() != null ? ex.getMessage() : "Access denied";
         ErrorResponse error = new ErrorResponse(message, HttpStatus.FORBIDDEN.value());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(BadRequestException ex) {
+        String message = ex.getMessage() != null ? ex.getMessage() : "Bad Request";
+        ErrorResponse error = new ErrorResponse(message, HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UnauthorizedException.class)

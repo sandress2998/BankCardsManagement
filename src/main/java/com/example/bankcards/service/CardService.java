@@ -1,25 +1,24 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardActionRequest;
-import com.example.bankcards.dto.CardInfoResponse;
-import com.example.bankcards.entity.Card;
 import com.example.bankcards.dto.CardBalanceResponse;
+import com.example.bankcards.dto.CardInfoResponse;
+import com.example.bankcards.dto.CardNumberBody;
+import com.example.bankcards.dto.CardTransferMoney;
+import com.example.bankcards.entity.Card;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CardService {
-    public CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) throws Exception;
+    CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) throws Exception;
 
-    public void activate(CardActionRequest request);
+    void delete(CardNumberBody request) throws Exception;
 
-    public void block(CardActionRequest request);
+    void updateCard(Card.Action action, CardNumberBody request) throws Exception;
 
-    public void delete(CardActionRequest request);
+    CardBalanceResponse getBalance(CardNumberBody request);
 
-    public CardBalanceResponse getBalance(CardActionRequest request);
+    List<CardInfoResponse> getCardsInfo(UUID id) throws Exception;
 
-    public List<Card> getAllCards(UUID ownerId);
-
-    public void doMoneyTransfer(String cardNumberFrom, String cardNumberTo);
+    void doMoneyTransfer(CardTransferMoney body) throws Exception;
 }

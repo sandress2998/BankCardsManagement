@@ -1,12 +1,10 @@
 package com.example.bankcards.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Entity
 public class Card {
@@ -17,6 +15,7 @@ public class Card {
     @Column(name = "encrypted_number", nullable = false, unique = true)
     private String encryptedNumber;
 
+    @JsonManagedReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User owner;
@@ -30,6 +29,7 @@ public class Card {
     @Column(nullable = false)
     private double balance = 0;
 
+    @JsonManagedReference("encryption")
     @OneToOne(mappedBy = "card", optional = false, cascade = CascadeType.ALL)
     private CardEncryptionKey encryptionKey;
 
@@ -98,7 +98,11 @@ public class Card {
         ACTIVE, BLOCKED, EXPIRED
     }
 
-    public enum Action {
+    public enum CardAction {
         ACTIVATE, BLOCK
+    }
+
+    public enum BalanceAction {
+        DEPOSIT_MONEY, WITHDRAW_MONEY, VIEW_CURRENT_BALANCE
     }
 }

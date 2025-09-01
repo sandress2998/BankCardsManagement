@@ -6,7 +6,6 @@ import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.util.EncryptionAES;
 import com.example.bankcards.util.HmacUtils;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,37 +56,61 @@ public class CardSecurityServiceImpl implements CardSecurityService {
     }
 
     @Override
-    public SecretKey generateKey() throws Exception {
-        return EncryptionAES.generateAESKey();
+    public SecretKey generateKey() {
+        try {
+            return EncryptionAES.generateAESKey();
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 
     @Override
-    public String encryptNumber(String cardNumber, SecretKey key) throws Exception {
-        return EncryptionAES.encryptAES(cardNumber, key);
+    public String encryptNumber(String cardNumber, SecretKey key) {
+        try {
+            return EncryptionAES.encryptAES(cardNumber, key);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 
     @Override
-    public String decryptNumber(String encryptedCardNumber, SecretKey key) throws Exception {
-        return EncryptionAES.decryptAES(encryptedCardNumber, key);
+    public String decryptNumber(String encryptedCardNumber, SecretKey key) {
+        try {
+            return EncryptionAES.decryptAES(encryptedCardNumber, key);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 
     @Override
-    public String encryptKey(SecretKey key) throws Exception {
-        return EncryptionAES.encryptKey(key, masterKey);
+    public String encryptKey(SecretKey key) {
+        try {
+            return EncryptionAES.encryptKey(key, masterKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 
     @Override
-    public SecretKey decryptKey(String encryptedKey) throws Exception {
-        return EncryptionAES.decryptKey(encryptedKey, masterKey);
+    public SecretKey decryptKey(String encryptedKey) {
+        try {
+            return EncryptionAES.decryptKey(encryptedKey, masterKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 
     @Override
-    public String calculateHmac(String cardNumber) throws Exception {
-        // Получаем байты ключа
-        byte[] keyBytes = hmacKey.getEncoded();
-        // Преобразуем байты ключа в строку Base64
-        String base64Key = Base64.getEncoder().encodeToString(keyBytes);
-        // Вызываем существующий метод, передавая строковый ключ
-        return HmacUtils.calculateHMAC(cardNumber, base64Key);
+    public String calculateHmac(String cardNumber) {
+        try {
+            // Получаем байты ключа
+            byte[] keyBytes = hmacKey.getEncoded();
+            // Преобразуем байты ключа в строку Base64
+            String base64Key = Base64.getEncoder().encodeToString(keyBytes);
+            // Вызываем существующий метод, передавая строковый ключ
+            return HmacUtils.calculateHMAC(cardNumber, base64Key);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal Error");
+        }
     }
 }

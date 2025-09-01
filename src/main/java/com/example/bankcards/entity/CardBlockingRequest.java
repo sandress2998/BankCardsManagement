@@ -18,9 +18,7 @@ public class CardBlockingRequest {
         this.card = card;
     }
 
-    public CardBlockingRequest() {
-
-    }
+    public CardBlockingRequest() {}
 
     public UUID getId() {
         return id;

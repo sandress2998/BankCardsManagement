@@ -2,6 +2,7 @@ package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.AdminRequest;
 import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.exception.UnauthorizedException;
@@ -12,10 +13,16 @@ import com.example.bankcards.util.BCryptEncoder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -64,10 +71,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<UserInfoResponse> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAll(pageable);
+        List<UserInfoResponse> userInfoResponses = new ArrayList<>();
+        for (User user : users.getContent()) {
+            userInfoResponses.add(new UserInfoResponse(user.getId(), user.getLogin(), user.getRole()));
+        }
+
+        return userInfoResponses;
+    }
+
+    @Override
     public User findById(UUID id) {
         return userRepository.findUserById(id);
     }
-
 
     /** Извлечение authentication (data) из SecurityContext */
     private Authentication getAuthData() {

@@ -1,15 +1,11 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.CardBalanceResponse;
-import com.example.bankcards.dto.CardInfoResponse;
-import com.example.bankcards.dto.CardNumberBody;
-import com.example.bankcards.dto.CardTransferMoney;
-import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardEncryptionKey;
-import com.example.bankcards.entity.CardHash;
-import com.example.bankcards.entity.User;
+import com.example.bankcards.dto.*;
+import com.example.bankcards.entity.*;
+import com.example.bankcards.exception.BadRequestException;
 import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.exception.UnauthorizedException;
+import com.example.bankcards.repository.CardBlockingRequestRepository;
 import com.example.bankcards.repository.CardHashRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -17,9 +13,10 @@ import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
-import org.apache.coyote.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -39,17 +36,25 @@ public class CardServiceImpl implements CardService {
     @Value("${card.months-until-expires}")
     private int monthsQuantityUntilExpiresDefault;
 
-    @Autowired
     CardRepository cardRepository;
-
-    @Autowired
     CardHashRepository cardHashRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     CardSecurityService cardSecurityService;
+    CardBlockingRequestRepository cardBlockingRequestRepository;
+
+    public CardServiceImpl(
+        CardRepository cardRepository,
+        CardSecurityService cardSecurityService,
+        UserRepository userRepository,
+        CardHashRepository cardHashRepository,
+        CardBlockingRequestRepository cardBlockingRequestRepository
+    ) {
+        this.cardRepository = cardRepository;
+        this.cardSecurityService = cardSecurityService;
+        this.userRepository = userRepository;
+        this.cardHashRepository = cardHashRepository;
+        this.cardBlockingRequestRepository = cardBlockingRequestRepository;
+    }
 
     public LocalDate setValidityPeriod(Integer monthsQuantity) {
         if (monthsQuantity == null) {
@@ -65,7 +70,7 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    public CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) throws Exception {
+    public CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) {
         System.out.println("Create method started");
         User owner = userRepository.findUserById(ownerId);
 
@@ -89,6 +94,7 @@ public class CardServiceImpl implements CardService {
         newCard.setEncryptionKey(encryptedSecretKey);
         encryptedSecretKey.setCard(newCard);
 
+        // сохраняем в базу данных
         Card receivedCard = cardRepository.save(newCard);
         cardSecurityService.saveEncryptedKey(encryptedSecretKey);
 
@@ -98,22 +104,18 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    public void updateCard(Card.Action action, CardNumberBody request) {
+    public void updateCard(Card.CardAction cardAction, CardNumberBody request) {
         Card card = getCardByNumber(request.number());
-        switch (action) {
-            case ACTIVATE -> {
-                cardRepository.updateCardStatus(card.getId(), Card.Status.ACTIVE);
-            }
-            case BLOCK -> {
-                cardRepository.updateCardStatus(card.getId(), Card.Status.BLOCKED);
-            }
+        switch (cardAction) {
+            case ACTIVATE -> cardRepository.updateCardStatus(card.getId(), Card.Status.ACTIVE);
+            case BLOCK -> cardRepository.updateCardStatus(card.getId(), Card.Status.BLOCKED);
         }
     }
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    public void delete(CardNumberBody request) throws Exception {
+    public void delete(CardNumberBody request)  {
         Card card = getCardByNumber(request.number());
 
         // надо удалить хэш из CardHash
@@ -123,54 +125,54 @@ public class CardServiceImpl implements CardService {
         cardSecurityService.deleteEncryptedKey(card.getEncryptionKey().getId());
         // надо удалить карту из Card
         cardRepository.delete(card);
-
-
         // если есть, надо удалить из CardBlockRequest
+        cardBlockingRequestRepository.deleteByCardId(card.getId());
     }
 
+    /** Функция, которая позволяет узнать данные всех карточек пользователя */
     @Override
-    public CardBalanceResponse getBalance(CardNumberBody request) {
-        Card card = getCardByNumber(request.number());
-        return new CardBalanceResponse(card.getBalance());
-    }
-
-    @Override
-    public List<CardInfoResponse> getCardsInfo(UUID id) throws Exception {
-        Authentication auth = getAuthData();
-
-        boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        UUID currentUserId = UUID.fromString(auth.getName());
-
-        if (!isAdmin && !currentUserId.equals(id)) {
-            throw new AccessDeniedException("Access denied: not admin and not owner");
-        }
+    public List<CardInfoResponse> getCardsInfo(
+        UUID id,
+        Card.Status status,
+        int page,
+        int size
+    ) {
+        boolean isAdmin = isCurrentUserIsAdmin();
+        UUID ownerId;
 
         if (isAdmin && id == null) {
-            throw new BadRequestException("Id is missing");
+            ownerId = UUID.fromString(getAuthData().getName());
+        } else if (isAdmin) {
+            ownerId = id;
+            if (userRepository.findUserById(ownerId) == null) {
+                throw new NotFoundException("User not found");
+            }
+        } else {
+            ownerId = UUID.fromString(getAuthData().getName());
         }
 
-        UUID ownerId = isAdmin ? id : currentUserId;
-
-        List<Card> cards = cardRepository.findByOwnerId(ownerId);
+        List<Card> cards;
         List<CardInfoResponse> cardInfoResponses = new ArrayList<>();
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        // если указан какой-то параметр для фильтра, то фильтруем.
+        if (status == null) {
+            cards = cardRepository.findByOwnerId(ownerId, pageable);
+        } else {
+            cards = cardRepository.findByOwnerIdAndStatus(ownerId, status, pageable);
+        }
+
         for (Card card : cards) {
             cardInfoResponses.add(mapToCardInfoResponse(card));
         }
         return cardInfoResponses;
     }
 
-
-    private String getCardNumber(Card card) throws Exception {
-        CardEncryptionKey encryptionKey = card.getEncryptionKey();
-        SecretKey decryptedKey = cardSecurityService.decryptKey(encryptionKey.getEncryptedKey());
-
-        return cardSecurityService.decryptNumber(card.getEncryptedNumber(), decryptedKey);
-    }
-
+    /** Перевод денег из одной карты на другую */
     @Transactional
     @Override
-    public void doMoneyTransfer(CardTransferMoney body) throws BadRequestException {
+    public void doMoneyTransfer(CardTransferMoney body) {
         if (body.amount() < 0) {
             throw new BadRequestException("Amount cannot be negative");
         }
@@ -178,17 +180,122 @@ public class CardServiceImpl implements CardService {
         Card cardFrom = getCardByNumber(body.from());
         Card cardTo = getCardByNumber(body.to());
 
-        if (!cardFrom.getOwner().getId().equals(UUID.fromString(getAuthData().getName())))
-        {
-            throw new AccessDeniedException("You don't have permission to transfer money");
+        checkCardAvailable(cardFrom);
+        checkCardAvailable(cardTo);
+
+        validateBalanceUpdateCorrect(cardFrom, -body.amount());
+        validateBalanceUpdateCorrect(cardFrom, body.amount());
+
+        cardRepository.transferMoney(cardFrom.getId(), cardTo.getId(), body.amount());
+    }
+
+    /** Позволяет узнать почти все данные карты, в том числе номер карты. Тестовый метод (созданный для удобства тестирования и проверки) */
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<CardFullInfoResponse> getAllCards() {
+        List<Card> cards = cardRepository.findAll();
+        ArrayList<CardFullInfoResponse> cardsFullInfo = new ArrayList<>();
+
+        for (Card card : cards) {
+            // На самом деле здесь будет не encrypted number, а decrypted number (ради теста)
+            card.setEncryptedNumber(getCardNumber(card));
+            cardsFullInfo.add(mapToCardFullInfo(card));
+        }
+        return cardsFullInfo;
+    }
+
+    @Transactional
+    @Override
+    public CardBalanceResponse processCardBalanceAction(Card.BalanceAction action, CardBalanceRequest body) {
+        Card card = getCardByNumber(body.cardNumber());
+
+        checkCardAvailable(card);
+
+        if (body.amount() < 0) {
+            throw new BadRequestException("Amount cannot be negative");
         }
 
-        if (isBalanceUpdateCorrect(cardFrom, -body.amount()) &&  isBalanceUpdateCorrect(cardFrom, +body.amount())) {
-            cardRepository.updateCardBalance(cardFrom.getId(), cardFrom.getBalance() - body.amount());
-            cardRepository.updateCardBalance(cardTo.getId(), cardTo.getBalance() + body.amount());
+        switch (action) {
+            case WITHDRAW_MONEY -> {
+                return withdrawMoney(card, body.amount());
+            }
+            case DEPOSIT_MONEY -> {
+                return depositMoney(card, body.amount());
+            }
+            case VIEW_CURRENT_BALANCE -> {
+                return new CardBalanceResponse(card.getBalance());
+            }
+            default -> throw new BadRequestException("Invalid action");
         }
     }
 
+    @Override
+    @Transactional
+    public void submitCardBlocking(CardNumberBody body) {
+        Card card = getCardByNumber(body.number());
+
+        checkCardAvailable(card);
+
+        cardBlockingRequestRepository.save(new CardBlockingRequest(card));
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<CardBlockingResponse> getBlockRequests(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<CardBlockingRequest> requests = cardBlockingRequestRepository.findAll(pageable);
+        List<CardBlockingResponse> result = new ArrayList<>();
+        for (CardBlockingRequest request: requests) {
+            result.add(new CardBlockingResponse(request.getCard().getId()));
+        }
+
+        return result;
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Override
+    public void processBlockRequest(UUID cardId) {
+        if (cardId == null) {
+            throw new BadRequestException("Card ID cannot be null");
+        }
+        if (!cardRepository.existsCardById(cardId)) {
+            throw new NotFoundException("Card not found");
+        }
+
+        cardRepository.updateCardStatus(cardId, Card.Status.BLOCKED);
+        cardBlockingRequestRepository.deleteById(cardId);
+    }
+
+    private CardBalanceResponse withdrawMoney(Card card, double amount) {
+        validateBalanceUpdateCorrect(card, -amount);
+        double newBalance = card.getBalance() - amount;
+        cardRepository.updateCardBalance(card.getId(), newBalance);
+        return new CardBalanceResponse(newBalance);
+    }
+
+    private CardBalanceResponse depositMoney(Card card, double amount) {
+        validateBalanceUpdateCorrect(card, amount);
+        double newBalance = card.getBalance() + amount;
+        cardRepository.updateCardBalance(card.getId(), newBalance);
+        return new CardBalanceResponse(newBalance);
+    }
+
+    ///  Функции, работающие с шифрованными данными
+
+    /** Функция, расшифровывающая номер карты по переданному объекту Card */
+    private String getCardNumber(Card card) {
+        try {
+            CardEncryptionKey encryptionKey = card.getEncryptionKey();
+            SecretKey decryptedKey = cardSecurityService.decryptKey(encryptionKey.getEncryptedKey());
+            return cardSecurityService.decryptNumber(card.getEncryptedNumber(), decryptedKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal error");
+        }
+    }
+
+    /** Функция, по номеру карты определяющая объект Card (извлекается из базы данных) */
     private Card getCardByNumber(String cardNumber) {
         // сначала найдем все карты, которые принадлежат пользователю
         UUID id = UUID.fromString(getAuthData().getName());
@@ -214,7 +321,18 @@ public class CardServiceImpl implements CardService {
         throw new NotFoundException("Card not found");
     }
 
-    private CardInfoResponse mapToCardInfoResponse(Card card) throws Exception {
+    private CardFullInfoResponse mapToCardFullInfo(Card card) {
+        return new CardFullInfoResponse(
+            card.getId(),
+            card.getEncryptedNumber(), // на самом деле здесь должен быть предварительно расшифрованный номер карты
+            card.getOwner().getLogin(),
+            card.getValidityPeriod(),
+            card.getStatus(),
+            card.getBalance()
+        );
+    }
+
+    private CardInfoResponse mapToCardInfoResponse(Card card) {
         String plainNumber = getCardNumber(card);
 
         String maskedNumber = CardUtil.maskCardNumber(plainNumber);
@@ -229,7 +347,20 @@ public class CardServiceImpl implements CardService {
         );
     }
 
-    private String generateUniqueCardNumber() throws Exception {
+    ///  Получение/генерация доп. данных
+
+    private Authentication getAuthData() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
+
+        return auth;
+    }
+
+    /** Генерирует уникальный номер карты. Гарантирует что карты с таким номером не существует. */
+    private String generateUniqueCardNumber()  {
         StringBuilder resultNumber;
         String resultHash;
 
@@ -241,7 +372,12 @@ public class CardServiceImpl implements CardService {
                 int randomNumber = ThreadLocalRandom.current().nextInt(0, 10000);
                 resultNumber.append(String.format("%04d", randomNumber));
             }
-            resultHash = cardSecurityService.calculateHmac(resultNumber.toString());
+
+            try {
+                resultHash = cardSecurityService.calculateHmac(resultNumber.toString());
+            } catch (Exception e) {
+                throw new RuntimeException("Internal error");
+            }
 
             if (!cardHashRepository.existsByHmacHash(resultHash)) {
                 cardHashRepository.save(new CardHash(resultHash));
@@ -253,7 +389,9 @@ public class CardServiceImpl implements CardService {
         throw new RuntimeException("Too much attempts to generate card number. Something went wrong.");
     }
 
-    private boolean isBalanceUpdateCorrect(Card card, double sum) {
+    ///  Различные проверки
+
+    private void validateBalanceUpdateCorrect(Card card, double sum) {
         double newBalance;
         double currentBalance = card.getBalance();
         if (currentBalance > Double.MAX_VALUE - sum) {
@@ -263,16 +401,18 @@ public class CardServiceImpl implements CardService {
         if (newBalance < 0) {
             throw new IllegalArgumentException("Not enough balance");
         }
-        return true;
     }
 
-    private Authentication getAuthData() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new UnauthorizedException("User is not authenticated");
+    private void checkCardAvailable(Card card) {
+        if (!(card.getStatus() == Card.Status.ACTIVE
+            && !card.getValidityPeriod().isBefore(LocalDate.now()))) {
+            throw new AccessDeniedException("Card is not available");
         }
+    }
 
-        return auth;
+    private boolean isCurrentUserIsAdmin() {
+        Authentication auth = getAuthData();
+        return auth.getAuthorities().stream()
+            .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 }

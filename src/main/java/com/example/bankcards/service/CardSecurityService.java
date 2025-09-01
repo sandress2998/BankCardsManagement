@@ -11,12 +11,12 @@ public interface CardSecurityService {
     void deleteEncryptedKey(UUID id);
 
     // encryption
-    SecretKey generateKey() throws Exception;
-    String encryptNumber(String data, SecretKey key) throws Exception;
-    String decryptNumber(String encryptedData, SecretKey key) throws Exception;
-    String encryptKey(SecretKey key) throws Exception;
-    SecretKey decryptKey(String encryptedKey) throws Exception;
+    SecretKey generateKey();
+    String encryptNumber(String data, SecretKey key);
+    String decryptNumber(String encryptedData, SecretKey key);
+    String encryptKey(SecretKey key);
+    SecretKey decryptKey(String encryptedKey);
 
     // hash
-    String calculateHmac(String data) throws Exception;
+    String calculateHmac(String data);
 }

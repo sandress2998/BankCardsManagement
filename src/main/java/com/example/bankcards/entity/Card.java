@@ -103,6 +103,6 @@ public class Card {
     }
 
     public enum BalanceAction {
-        DEPOSIT_MONEY, WITHDRAW_MONEY, VIEW_CURRENT_BALANCE
+        DEPOSIT_MONEY, WITHDRAW_MONEY
     }
 }

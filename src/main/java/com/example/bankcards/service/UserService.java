@@ -1,13 +1,71 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.AdminRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
 
 import java.util.List;
 import java.util.UUID;
 
+public interface UserService {
+
+    /**
+     * Находит пользователя по логину.
+     *
+     * @param login логин пользователя
+     * @return объект пользователя User или null, если не найден
+     * @throws com.example.bankcards.exception.NotFoundException если пользователь не был найден
+     */
+    User findByLogin(String login);
+
+    /**
+     * Сохраняет пользователя в базе данных.
+     *
+     * @param user объект пользователя для сохранения
+     * @return сохранённый объект пользователя User с установленным идентификатором
+     */
+    User save(User user);
+
+    /**
+     * Запрос на получение роли администратора (ADMIN) для текущего пользователя.
+     *
+     * Нюансы:
+     * - Пользователь должен быть аутентифицирован.
+     * - Проверяется переданный "секретный" пароль (secret) с захешированным значением из настроек.
+     * - При успешной проверке обновляет роль пользователя в базе и возвращает новый JWT с ролью ADMIN.
+     * - При неверном пароле выбрасывается UnauthorizedException.
+     * - При отсутствии пользователя выбрасывается NotFoundException.
+     *
+     * @param request объект с секретом для получения роли ADMIN
+     * @return объект AuthResponse с новым JWT токеном
+     * @throws org.springframework.security.access.AccessDeniedException если пароль неправильный
+     */
+    JwtResponse requestAdmin(AdminRequest request);
+
+    /**
+     * Получает список всех пользователей с пагинацией.
+     *
+     * Нюансы:
+     * - Доступно только пользователям с ролью ROLE_ADMIN.
+     *
+     * @param page номер страницы (0-основанный)
+     * @param size размер страницы
+     * @return список DTO объектов UserInfoResponse с базовой информацией о пользователях
+     */
+    List<UserInfoResponse> getAll(int page, int size);
+
+    /**
+     * Находит пользователя по UUID.
+     *
+     * @param id UUID пользователя
+     * @return объект пользователя (если не найден, выбрасывает исключение)
+     * @throws com.example.bankcards.exception.NotFoundException
+     */
+    UserInfoResponse findById(UUID id);
+}
+
+/*
 public interface UserService {
 
     User findByLogin(String login);
@@ -20,3 +78,4 @@ public interface UserService {
 
     List<UserInfoResponse> getAll(int page, int size);
 }
+ */

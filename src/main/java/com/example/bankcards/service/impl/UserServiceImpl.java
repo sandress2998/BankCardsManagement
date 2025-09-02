@@ -1,7 +1,7 @@
 package com.example.bankcards.service.impl;
 
 import com.example.bankcards.dto.AdminRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.NotFoundException;
@@ -11,11 +11,11 @@ import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.BCryptEncoder;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,14 +27,19 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    JwtService jwtService;
-
     @Value("${security.admin.secret}")
     String hashedSecretForAdmin;
+
+    UserRepository userRepository;
+    JwtService jwtService;
+
+    public UserServiceImpl(
+        UserRepository userRepository,
+        JwtService jwtService
+    ) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
 
     @Override
     public User findByLogin(String login) {
@@ -50,23 +55,19 @@ public class UserServiceImpl implements UserService {
     /** Запрос на получение статуса ADMIN */
     @Transactional
     @Override
-    public AuthResponse requestAdmin(AdminRequest request) {
+    public JwtResponse requestAdmin(AdminRequest request) {
         Authentication authData = getAuthData();
-        String id = authData.getName();
+        UUID id = UUID.fromString(authData.getName());
+        checkIsExistById(id);
         String jwt = authData.getCredentials().toString();
-        User user = userRepository.findUserById(UUID.fromString(id));
-
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
 
         if (BCryptEncoder.matches(request.secret(), hashedSecretForAdmin)) {
-            userRepository.updateRole(UUID.fromString(id), User.Role.ADMIN);
+            userRepository.updateRole(id, User.Role.ADMIN);
 
             String updatedJwt = jwtService.changeRoleInJwt(jwt, User.Role.ADMIN);
-            return new AuthResponse(updatedJwt);
+            return new JwtResponse(updatedJwt);
         } else {
-            throw new UnauthorizedException("Wrong password");
+            throw new AccessDeniedException("Wrong password");
         }
     }
 
@@ -84,8 +85,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(UUID id) {
-        return userRepository.findUserById(id);
+    public UserInfoResponse findById(UUID id) {
+        User user = userRepository.findUserById(id);
+
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        return new UserInfoResponse(user.getId(), user.getLogin(), user.getRole());
+    }
+
+    private void checkIsExistById(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User not found");
+        }
     }
 
     /** Извлечение authentication (data) из SecurityContext */

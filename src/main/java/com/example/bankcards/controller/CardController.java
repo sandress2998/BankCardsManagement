@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.Card;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,10 +15,10 @@ public interface CardController {
     CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires);
 
     // Обновление статуса карты (активация, блокировка и т.п.)
-    void updateCardStatus(Card.CardAction cardAction, CardNumberBody body);
+    void updateCardStatus(Card.CardAction cardAction, UUID cardId);
 
     // Удаление карты по номеру
-    void delete(CardNumberBody body);
+    void delete(UUID cardId);
 
     // Перевод денег между картами
     void doMoneyTransfer(CardTransferMoney body);
@@ -35,5 +36,4 @@ public interface CardController {
 
     // Получение списка заявок на блокировку с пагинацией
     List<CardBlockingResponse> getBlockRequests(int page, int size);
-
 }

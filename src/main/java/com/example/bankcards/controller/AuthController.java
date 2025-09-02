@@ -1,10 +1,10 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AuthRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.JwtResponse;
 
 public interface AuthController {
-    AuthResponse signin(AuthRequest request);
+    JwtResponse signin(AuthRequest request);
 
-    AuthResponse signup(AuthRequest request);
+    JwtResponse signup(AuthRequest request);
 }

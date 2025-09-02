@@ -1,7 +1,7 @@
 package com.example.bankcards.security.impl;
 
 import com.example.bankcards.dto.AuthRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.exception.UnauthorizedException;
@@ -23,7 +23,7 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public AuthResponse signin(AuthRequest request) {
+    public JwtResponse signin(AuthRequest request) {
         String password = request.password();
         String login = request.login();
         User user = userService.findByLogin(login);
@@ -35,11 +35,11 @@ public class SecurityServiceImpl implements SecurityService {
         }
 
         String jwt = jwtService.generateToken(user);
-        return new AuthResponse(jwt);
+        return new JwtResponse(jwt);
     }
 
     @Override
-    public AuthResponse signup(AuthRequest request) {
+    public JwtResponse signup(AuthRequest request) {
         String login = request.login();
         if (login.length() > 100) {
             throw new UnauthorizedException("Login is too long. Login length must be less than 100 characters");
@@ -54,6 +54,6 @@ public class SecurityServiceImpl implements SecurityService {
         User newUser = new User(login, encodedPassword, User.Role.USER);
         userService.save(newUser);
         String jwt = jwtService.generateToken(newUser);
-        return new AuthResponse(jwt);
+        return new JwtResponse(jwt);
     }
 }

@@ -41,7 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             // Если endpoint без необходимости авторизации - пропускаем запрос
             String uri = request.getRequestURI();
-            if (uri.startsWith("/public/") || uri.startsWith("/api/auth/")) {
+            if (uri.startsWith("/public/") || uri.startsWith("/api/auth/")
+                || uri.startsWith("/v3/api-docs") || uri.startsWith("/swagger-ui")) {
                 filterChain.doFilter(request, response);
                 return;
             }

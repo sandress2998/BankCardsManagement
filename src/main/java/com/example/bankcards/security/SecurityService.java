@@ -1,10 +1,10 @@
 package com.example.bankcards.security;
 
 import com.example.bankcards.dto.AuthRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.JwtResponse;
 
 public interface SecurityService {
-    AuthResponse signin(AuthRequest authRequest);
+    JwtResponse signin(AuthRequest authRequest);
 
-    AuthResponse signup(AuthRequest authRequest);
+    JwtResponse signup(AuthRequest authRequest);
 }

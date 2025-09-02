@@ -54,9 +54,14 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+val isProd: Boolean = (project.findProperty("env") ?: "test") == "prod"
+
 openApi {
-    apiDocsUrl.set("http://host.docker.internal:8080/v3/api-docs")
-    outputDir.set(file("/docs"))
+    apiDocsUrl.set(
+        if (isProd) "http://host.docker.internal:8080/v3/api-docs"
+        else "http://localhost:8080/v3/api-docs"
+    )
+    outputDir.set(file("${projectDir}/docs"));
 }
 
 tasks.withType<Test> {

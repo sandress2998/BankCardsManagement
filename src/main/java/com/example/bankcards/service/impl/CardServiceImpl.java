@@ -11,6 +11,7 @@ import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CardServiceImpl implements CardService {
+    private final UserService userService;
     @Value("${card.months-until-expires}")
     private int monthsQuantityUntilExpiresDefault;
 
@@ -47,13 +49,14 @@ public class CardServiceImpl implements CardService {
         CardSecurityService cardSecurityService,
         UserRepository userRepository,
         CardHashRepository cardHashRepository,
-        CardBlockingRequestRepository cardBlockingRequestRepository
-    ) {
+        CardBlockingRequestRepository cardBlockingRequestRepository,
+        UserService userService) {
         this.cardRepository = cardRepository;
         this.cardSecurityService = cardSecurityService;
         this.userRepository = userRepository;
         this.cardHashRepository = cardHashRepository;
         this.cardBlockingRequestRepository = cardBlockingRequestRepository;
+        this.userService = userService;
     }
 
     public LocalDate setValidityPeriod(Integer monthsQuantity) {
@@ -71,7 +74,6 @@ public class CardServiceImpl implements CardService {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) {
-        System.out.println("Create method started");
         User owner = userRepository.findUserById(ownerId);
 
         if (owner == null) {
@@ -104,8 +106,9 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    public void updateCard(Card.CardAction cardAction, CardNumberBody request) {
-        Card card = getCardByNumber(request.number());
+    public void updateCard(Card.CardAction cardAction, UUID cardId) {
+        Card card = getCardById(cardId);
+
         switch (cardAction) {
             case ACTIVATE -> cardRepository.updateCardStatus(card.getId(), Card.Status.ACTIVE);
             case BLOCK -> cardRepository.updateCardStatus(card.getId(), Card.Status.BLOCKED);
@@ -115,18 +118,19 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
-    public void delete(CardNumberBody request)  {
-        Card card = getCardByNumber(request.number());
+    public void delete(UUID cardId)  {
+        Card card = getCardById(cardId);
+        String number = getCardNumber(card);
 
         // надо удалить хэш из CardHash
-        String hashedKey = cardSecurityService.calculateHmac(request.number());
+        String hashedKey = cardSecurityService.calculateHmac(number);
         cardHashRepository.deleteByHmacHash(hashedKey);
         // надо удалить карту из CardEncryptionKey
         cardSecurityService.deleteEncryptedKey(card.getEncryptionKey().getId());
-        // надо удалить карту из Card
-        cardRepository.delete(card);
         // если есть, надо удалить из CardBlockRequest
         cardBlockingRequestRepository.deleteByCardId(card.getId());
+        // надо удалить карту из Card
+        cardRepository.delete(card);
     }
 
     /** Функция, которая позволяет узнать данные всех карточек пользователя */
@@ -206,14 +210,8 @@ public class CardServiceImpl implements CardService {
 
     @Transactional
     @Override
-    public CardBalanceResponse processCardBalanceAction(Card.BalanceAction action, CardBalanceRequest body) {
+    public CardBalanceResponse updateCardBalanceAction(Card.BalanceAction action, CardBalanceRequest body) {
         Card card = getCardByNumber(body.cardNumber());
-
-        checkCardAvailable(card);
-
-        if (body.amount() < 0) {
-            throw new BadRequestException("Amount cannot be negative");
-        }
 
         switch (action) {
             case WITHDRAW_MONEY -> {
@@ -222,11 +220,15 @@ public class CardServiceImpl implements CardService {
             case DEPOSIT_MONEY -> {
                 return depositMoney(card, body.amount());
             }
-            case VIEW_CURRENT_BALANCE -> {
-                return new CardBalanceResponse(card.getBalance());
-            }
             default -> throw new BadRequestException("Invalid action");
         }
+    }
+
+    @Override
+    public CardBalanceResponse getBalance(CardNumberBody body) {
+        Card card = getCardByNumber(body.number());
+
+        return new CardBalanceResponse(card.getBalance());
     }
 
     @Override
@@ -269,6 +271,11 @@ public class CardServiceImpl implements CardService {
     }
 
     private CardBalanceResponse withdrawMoney(Card card, double amount) {
+        if (amount < 0) {
+            throw new BadRequestException("Amount cannot be negative");
+        }
+
+        checkCardAvailable(card);
         validateBalanceUpdateCorrect(card, -amount);
         double newBalance = card.getBalance() - amount;
         cardRepository.updateCardBalance(card.getId(), newBalance);
@@ -276,13 +283,18 @@ public class CardServiceImpl implements CardService {
     }
 
     private CardBalanceResponse depositMoney(Card card, double amount) {
+        if (amount < 0) {
+            throw new BadRequestException("Amount cannot be negative");
+        }
+
+        checkCardAvailable(card);
         validateBalanceUpdateCorrect(card, amount);
         double newBalance = card.getBalance() + amount;
         cardRepository.updateCardBalance(card.getId(), newBalance);
         return new CardBalanceResponse(newBalance);
     }
 
-    ///  Функции, работающие с шифрованными данными
+    ///  Функции, работающие с зашифрованными данными
 
     /** Функция, расшифровывающая номер карты по переданному объекту Card */
     private String getCardNumber(Card card) {
@@ -339,6 +351,7 @@ public class CardServiceImpl implements CardService {
         String expiryDate = CardUtil.convertValidationDate(card.getValidityPeriod());
 
         return new CardInfoResponse(
+            card.getId(),
             maskedNumber,
             expiryDate,
             card.getStatus(),
@@ -387,6 +400,16 @@ public class CardServiceImpl implements CardService {
         } while (attempt < 100);
 
         throw new RuntimeException("Too much attempts to generate card number. Something went wrong.");
+    }
+
+    private Card getCardById(UUID cardId) {
+        Card card = cardRepository.findCardById(cardId);
+
+        if (card == null) {
+            throw new NotFoundException("Card not found");
+        }
+
+        return card;
     }
 
     ///  Различные проверки

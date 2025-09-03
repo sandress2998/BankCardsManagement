@@ -1,6 +1,5 @@
 package com.example.bankcards.exception;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -55,7 +54,7 @@ public class ExceptionResolver implements ErrorController {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleBadRequest(BadRequestException ex) {
+    public ErrorResponse handleBadRequest(com.example.bankcards.exception.BadRequestException ex) {
         String message = ex.getMessage() != null ? ex.getMessage() : "Bad Request";
         return new ErrorResponse(message, HttpStatus.BAD_REQUEST.value());
     }

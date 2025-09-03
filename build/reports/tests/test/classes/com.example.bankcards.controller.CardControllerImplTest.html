@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - CardControllerImplTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>CardControllerImplTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.example.bankcards.controller.html">com.example.bankcards.controller</a> &gt; CardControllerImplTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">23</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.532s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">create_ReturnsCreatedCard_OnSuccess()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_ReturnsCreatedCard_WithoutMonthsParam()</td>
+<td class="success">0.062s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">create_ReturnsNotFound_WhenUserNotFound()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">delete_ReturnsNoContent_OnSuccess()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">delete_ReturnsNotFound_WhenCardNotFound()</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">doMoneyTransfer_ReturnsBadRequest_OnInvalidData()</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">doMoneyTransfer_ReturnsNoContent_OnSuccess()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getAllCards_ReturnsCardsList_OnSuccess()</td>
+<td class="success">0.015s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getBalance_ReturnsBalance_OnSuccess()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getBalance_ReturnsNotFound_WhenCardNotFound()</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getBlockRequests_ReturnsEmptyList_WhenNoRequests()</td>
+<td class="success">0.024s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getBlockRequests_ReturnsRequestsList_OnSuccess()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getBlockRequests_UsesDefaultParameters_WhenNotProvided()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getCardsInfo_ReturnsCardsList_OnSuccess()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getCardsInfo_UsesDefaultParameters_WhenNotProvided()</td>
+<td class="success">0.212s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">processBlockRequest_ReturnsNoContent_OnSuccess()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">processBlockRequest_ReturnsNotFound_WhenCardNotFound()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">submitCardBlocking_ReturnsCreated_OnSuccess()</td>
+<td class="success">0.046s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">submitCardBlocking_ReturnsNotFound_WhenCardNotFound()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">updateCardBalance_ReturnsBadRequest_OnInvalidOperation()</td>
+<td class="success">0.012s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">updateCardBalance_ReturnsUpdatedBalance_OnSuccess()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">updateCardStatus_ReturnsNoContent_OnSuccess()</td>
+<td class="success">0.015s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">updateCardStatus_ReturnsNotFound_WhenCardNotFound()</td>
+<td class="success">0.018s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>20:31:23.060 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.bankcards.controller.CardControllerImplTest]: CardControllerImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:31:23.226 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.bankcards.BankCardsManagementApplication for test class com.example.bankcards.controller.CardControllerImplTest
+2025-09-03T20:31:23.729+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] c.e.b.controller.CardControllerImplTest  : Starting CardControllerImplTest using Java 17.0.16 with PID 15016 (started by user in D:\Develop\projects\IntelliJIDEA\BankCardsManagement)
+2025-09-03T20:31:23.730+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] c.e.b.controller.CardControllerImplTest  : The following 1 profile is active: &quot;dev&quot;
+2025-09-03T20:31:24.604+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'securityFilterChain' with a different definition: replacing [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=true; fallback=false; factoryBeanName=com.example.bankcards.controller.TestSecurityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/example/bankcards/controller/TestSecurityConfig.class]] with [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=securityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/example/bankcards/config/SecurityConfig.class]]
+2025-09-03T20:31:25.093+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-03T20:31:25.095+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2025-09-03T20:31:25.138+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardBlockingRequestRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T20:31:25.140+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardEncryptionKeyRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T20:31:25.144+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardHashRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T20:31:25.145+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T20:31:25.147+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.UserRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T20:31:25.148+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 44 ms. Found 0 JDBC repository interfaces.
+2025-09-03T20:31:25.162+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-03T20:31:25.163+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-03T20:31:25.215+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 44 ms. Found 5 JPA repository interfaces.
+2025-09-03T20:31:26.847+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-03T20:31:26.926+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-09-03T20:31:26.982+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-03T20:31:27.184+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-03T20:31:27.237+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-03T20:31:27.479+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=LIZA
+2025-09-03T20:31:27.482+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-03T20:31:27.521+03:00  WARN 15016 --- [BankCardsManagement] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-03T20:31:27.552+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-03T20:31:28.760+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: drop table if exists card cascade 
+Hibernate: drop table if exists card_blocking_request cascade 
+Hibernate: drop table if exists card_encryption_key cascade 
+Hibernate: drop table if exists card_hash cascade 
+Hibernate: drop table if exists user_info cascade 
+Hibernate: create table card (balance float(53) not null, status tinyint not null check (status between 0 and 2), validity_period date not null, id uuid not null, user_id uuid not null, encrypted_number varchar(255) not null unique, primary key (id))
+Hibernate: create table card_blocking_request (card_id uuid not null unique, id uuid not null, primary key (id))
+Hibernate: create table card_encryption_key (card_id uuid not null unique, id uuid not null, encrypted_key varchar(255), primary key (id))
+Hibernate: create table card_hash (id uuid not null, hmac_hash varchar(255) not null unique, primary key (id))
+Hibernate: create table user_info (role tinyint not null check (role between 0 and 1), id uuid not null, password varchar(60) not null, login varchar(100) not null unique, primary key (id))
+Hibernate: alter table if exists card add constraint FK7nhp9rkjjv4uqubqn68d2b1yv foreign key (user_id) references user_info
+Hibernate: alter table if exists card_blocking_request add constraint FK68se09rjas53dic05ii5tdbw7 foreign key (card_id) references card
+Hibernate: alter table if exists card_encryption_key add constraint FKbf60p5bpumk0s1glgmm8l6ein foreign key (card_id) references card
+2025-09-03T20:31:28.841+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-03T20:31:29.280+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-09-03T20:31:30.187+03:00  WARN 15016 --- [BankCardsManagement] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-03T20:31:30.235+03:00  WARN 15016 --- [BankCardsManagement] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 6dbac17e-9866-4f14-a481-18bb872ac7f8
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-09-03T20:31:30.244+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-09-03T20:31:30.807+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2025-09-03T20:31:31.605+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2025-09-03T20:31:31.605+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2025-09-03T20:31:31.607+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2025-09-03T20:31:31.703+03:00  INFO 15016 --- [BankCardsManagement] [    Test worker] c.e.b.controller.CardControllerImplTest  : Started CardControllerImplTest in 8.343 seconds (process running for 9.661)
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.13</a> at 3 сент. 2025 г., 20:31:32</p>
+</div>
+</div>
+</body>
+</html>

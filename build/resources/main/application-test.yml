@@ -1,0 +1,6 @@
+spring:
+  security:
+    enabled: false
+
+jwt:
+  enabled: false

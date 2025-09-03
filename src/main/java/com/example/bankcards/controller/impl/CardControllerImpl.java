@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Card API", description = "API для управления банковскими картами")
+@SecurityRequirement(name = "JWT")
 @RestController
 @RequestMapping("/api/card")
 public class CardControllerImpl implements CardController {
@@ -30,7 +32,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Тестовый метод: Получить подробную информацию о всех картах",
-        description = "Возвращает данные всех карт включая расшифрованные номера. Использовать только для тестирования.",
+        description = "Возвращает данные всех карт включая расшифрованные номера. Использовать только для тестирования. Доступ есть только у админа",
         responses = {
             @ApiResponse(responseCode = "200", description = "Список всех карт",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = CardFullInfoResponse.class))),
@@ -44,7 +46,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Создать карту для пользователя",
-        description = "Создает карту, генерирует номер и шифрует его. Требуется ownerId и необязательно количество месяцев до истечения срока.",
+        description = "Создает карту, генерирует номер и шифрует его. Требуется ownerId и необязательно количество месяцев до истечения срока. Доступ есть только у админа",
         responses = {
             @ApiResponse(responseCode = "201", description = "Информация о созданной карте",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = CardInfoResponse.class))),
@@ -59,7 +61,7 @@ public class CardControllerImpl implements CardController {
         @Parameter(description = "UUID владельца карты", required = true)
         @RequestParam UUID ownerId,
 
-        @Parameter(description = "Количество месяцев до окончания срока действия карты", required = false)
+        @Parameter(description = "Количество месяцев до окончания срока действия карты. Доступ есть только у админа.", required = false)
         @RequestParam(required = false) Integer monthsQuantityUntilExpires
     ) {
         return cardService.create(ownerId, monthsQuantityUntilExpires);
@@ -67,7 +69,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Обновить статус карты",
-        description = "Изменяет статус карты (ACTIVATE или BLOCK) по ID карты и действию",
+        description = "Изменяет статус карты (ACTIVATE или BLOCK) по ID карты и действию. Доступ есть только у админа.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Статус карты обновлен"),
             @ApiResponse(responseCode = "404", description = "Карта не найдена"),
@@ -89,7 +91,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Удалить карту",
-        description = "Удаляет карту и связанные с ней данные",
+        description = "Удаляет карту и связанные с ней данные. Доступ есть только у админа.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Карта удалена"),
             @ApiResponse(responseCode = "404", description = "Карта не найдена"),
@@ -108,7 +110,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Перевод средств между картами",
-        description = "Выполняет перевод указанной суммы с одной карты на другую",
+        description = "Выполняет перевод указанной суммы с одной карты на другую.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Перевод выполнен"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса"),
@@ -220,7 +222,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Обработка заявки на блокировку карты",
-        description = "Меняет статус карты на BLOCKED и удаляет заявку на блокировку",
+        description = "Меняет статус карты на BLOCKED и удаляет заявку на блокировку. Доступ есть только у админа.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Заявка обработана, карта заблокирована"),
             @ApiResponse(responseCode = "400", description = "Некорректный ID карты"),
@@ -240,7 +242,7 @@ public class CardControllerImpl implements CardController {
 
     @Operation(
         summary = "Получить список заявок на блокировку карт",
-        description = "Возвращает список заявок на блокировку с пагинацией",
+        description = "Возвращает список заявок на блокировку с пагинацией. Доступ есть только у админа.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Список заявок на блокировку",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = CardBlockingResponse.class)))

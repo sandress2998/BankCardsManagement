@@ -16,14 +16,25 @@ public interface UserService {
      * @param login логин пользователя
      * @return объект пользователя User или null, если не найден
      * @throws com.example.bankcards.exception.NotFoundException если пользователь не был найден
+     * @throws IllegalArgumentException если длина логина больше позволенного
      */
     User findByLogin(String login);
+
+    /**
+     * Проверяет, существует ли пользователь с данным логином.
+     *
+     * @param login логин пользователя
+     * @throws com.example.bankcards.exception.BadRequestException если пользователь с переданным логином существует
+     * @throws IllegalArgumentException если длина логина больше позволенного
+     */
+    void checkIfNotExistsByLogin(String login);
 
     /**
      * Сохраняет пользователя в базе данных.
      *
      * @param user объект пользователя для сохранения
      * @return сохранённый объект пользователя User с установленным идентификатором
+     * @throws IllegalArgumentException если переданные данные пользователя не соответствуют нормам
      */
     User save(User user);
 
@@ -62,7 +73,7 @@ public interface UserService {
      * @return объект пользователя (если не найден, выбрасывает исключение)
      * @throws com.example.bankcards.exception.NotFoundException
      */
-    UserInfoResponse findById(UUID id);
+    UserInfoResponse getUserInfoById(UUID id);
 }
 
 /*

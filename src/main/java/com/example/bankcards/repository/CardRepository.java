@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
     Card findCardById(UUID id);
 
     boolean existsCardById(UUID id);
+
+    List<Card> findByValidityPeriodBeforeAndStatus(LocalDate now, Card.Status status);
 
     @Modifying
     @Query("UPDATE Card c SET c.status = :newStatus WHERE c.id = :id")

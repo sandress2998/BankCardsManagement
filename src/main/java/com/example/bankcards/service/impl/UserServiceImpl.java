@@ -4,6 +4,7 @@ import com.example.bankcards.dto.AdminRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.BadRequestException;
 import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.repository.UserRepository;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
     @Value("${security.admin.secret}")
-    String hashedSecretForAdmin;
+    public String hashedSecretForAdmin;
 
     UserRepository userRepository;
     JwtService jwtService;
@@ -43,12 +44,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByLogin(String login) {
-        return userRepository.findByLogin(login);
+        User.validateLogin(login);
+        User user = userRepository.findByLogin(login);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        return user;
+    }
+
+    @Override
+    public void checkIfNotExistsByLogin(String login) {
+        User.validateLogin(login);
+        if (userRepository.existsByLogin(login)) {
+            throw new BadRequestException("User with such login already exists");
+        }
     }
 
     @Transactional
     @Override
     public User save(User user) {
+        User.validateUser(user);
         return userRepository.save(user);
     }
 
@@ -85,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoResponse findById(UUID id) {
+    public UserInfoResponse getUserInfoById(UUID id) {
         User user = userRepository.findUserById(id);
 
         if (user == null) {

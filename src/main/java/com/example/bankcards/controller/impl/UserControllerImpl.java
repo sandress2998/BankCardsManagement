@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 
 @Tag(name = "User API", description = "API для работы с пользователями")
+@SecurityRequirement(name = "JWT")
 @RestController
 @RequestMapping("/api/user")
 public class UserControllerImpl implements UserController {
@@ -55,7 +57,7 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/me")
     public UserInfoResponse getMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return userService.findById(UUID.fromString(auth.getName()));
+        return userService.getUserInfoById(UUID.fromString(auth.getName()));
     }
 
     @Operation(

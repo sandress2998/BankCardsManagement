@@ -1,7 +1,6 @@
 package com.example.bankcards.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,11 +9,13 @@ import java.util.UUID;
 
 @Entity(name = "user_info")
 public class User {
+    public static final int LOGIN_MAX_LENGTH = 100;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false, length = LOGIN_MAX_LENGTH)
     private String login;
 
     @Column(nullable = false, length = 60)
@@ -49,6 +50,18 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setId(UUID id) { this.id = id; }
+
+    public static void validateUser(User user) {
+        validateLogin(user.getLogin());
+    }
+
+    public static void validateLogin(String login) {
+        if (login.length() > LOGIN_MAX_LENGTH) {
+            throw new IllegalArgumentException("Login is too long: length must be less than or equal to " + LOGIN_MAX_LENGTH);
+        }
     }
 
     public enum Role {

@@ -3,7 +3,6 @@ package com.example.bankcards.security.impl;
 import com.example.bankcards.dto.AuthRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.security.SecurityService;
@@ -28,9 +27,7 @@ public class SecurityServiceImpl implements SecurityService {
         String login = request.login();
         User user = userService.findByLogin(login);
 
-        if (user == null) {
-            throw new NotFoundException("User with login " + login + " not found");
-        } else if (!BCryptEncoder.matches(password, user.getPassword())) {
+        if (!BCryptEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("Wrong password");
         }
 
@@ -47,9 +44,7 @@ public class SecurityServiceImpl implements SecurityService {
 
         String encodedPassword = BCryptEncoder.encodePassword(request.password());
 
-        if (userService.findByLogin(login) != null) {
-            throw new UnauthorizedException("User with such login already exists");
-        }
+        userService.checkIfNotExistsByLogin(login);
 
         User newUser = new User(login, encodedPassword, User.Role.USER);
         userService.save(newUser);

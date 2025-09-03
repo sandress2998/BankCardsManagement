@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     User findByLogin(String login);
 
+    boolean existsByLogin(String login);
+
     @Modifying
     @Query("UPDATE user_info u SET u.role = :role WHERE u.id = :id")
     void updateRole(@Param("id") UUID id, @Param("role") User.Role role);

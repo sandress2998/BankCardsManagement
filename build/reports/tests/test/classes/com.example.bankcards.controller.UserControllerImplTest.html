@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - UserControllerImplTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>UserControllerImplTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.example.bankcards.controller.html">com.example.bankcards.controller</a> &gt; UserControllerImplTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">12</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">11</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.587s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox failures" id="successRate">
+<div class="percent">8%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a href="#">Failed tests</a>
+</li>
+<li>
+<a href="#">Tests</a>
+</li>
+<li>
+<a href="#">Standard output</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Failed tests</h2>
+<div class="test">
+<a name="getAll_ReturnsEmptyList_WhenNoUsersFound()"></a>
+<h3 class="failures">getAll_ReturnsEmptyList_WhenNoUsersFound()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getAll_ReturnsEmptyList_WhenNoUsersFound(UserControllerImplTest.java:267)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getAll_ReturnsUnauthorized_OnUnauthenticatedUser()"></a>
+<h3 class="failures">getAll_ReturnsUnauthorized_OnUnauthenticatedUser()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;401&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getAll_ReturnsUnauthorized_OnUnauthenticatedUser(UserControllerImplTest.java:254)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getAll_ReturnsUsersList_OnAdminUser()"></a>
+<h3 class="failures">getAll_ReturnsUsersList_OnAdminUser()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getAll_ReturnsUsersList_OnAdminUser(UserControllerImplTest.java:199)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getAll_UsesCustomParameters_WhenProvided()"></a>
+<h3 class="failures">getAll_UsesCustomParameters_WhenProvided()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getAll_UsesCustomParameters_WhenProvided(UserControllerImplTest.java:233)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getAll_UsesDefaultParameters_WhenNotProvided()"></a>
+<h3 class="failures">getAll_UsesDefaultParameters_WhenNotProvided()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getAll_UsesDefaultParameters_WhenNotProvided(UserControllerImplTest.java:217)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getMe_ReturnsNotFound_WhenUserNotFound()"></a>
+<h3 class="failures">getMe_ReturnsNotFound_WhenUserNotFound()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;404&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getMe_ReturnsNotFound_WhenUserNotFound(UserControllerImplTest.java:185)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getMe_ReturnsUnauthorized_OnUnauthenticatedUser()"></a>
+<h3 class="failures">getMe_ReturnsUnauthorized_OnUnauthenticatedUser()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;401&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getMe_ReturnsUnauthorized_OnUnauthenticatedUser(UserControllerImplTest.java:173)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="getMe_ReturnsUserInfo_OnAuthenticatedUser()"></a>
+<h3 class="failures">getMe_ReturnsUserInfo_OnAuthenticatedUser()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.getMe_ReturnsUserInfo_OnAuthenticatedUser(UserControllerImplTest.java:161)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="requestAdmin_ReturnsJwt_OnValidSecret()"></a>
+<h3 class="failures">requestAdmin_ReturnsJwt_OnValidSecret()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;200&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.requestAdmin_ReturnsJwt_OnValidSecret(UserControllerImplTest.java:121)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="requestAdmin_ReturnsUnauthorized_OnInvalidSecret()"></a>
+<h3 class="failures">requestAdmin_ReturnsUnauthorized_OnInvalidSecret()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;401&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.requestAdmin_ReturnsUnauthorized_OnInvalidSecret(UserControllerImplTest.java:140)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+<div class="test">
+<a name="requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser()"></a>
+<h3 class="failures">requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser()</h3>
+<span class="code">
+<pre>java.lang.AssertionError: Status expected:&lt;401&gt; but was:&lt;403&gt;
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:61)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:128)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:640)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.example.bankcards.controller.UserControllerImplTest.requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser(UserControllerImplTest.java:149)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+</pre>
+</span>
+</div>
+</div>
+<div class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="failures">getAll_ReturnsEmptyList_WhenNoUsersFound()</td>
+<td class="failures">0.015s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="success">getAll_ReturnsForbidden_OnUserRole()</td>
+<td class="success">0.032s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="failures">getAll_ReturnsUnauthorized_OnUnauthenticatedUser()</td>
+<td class="failures">0.011s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getAll_ReturnsUsersList_OnAdminUser()</td>
+<td class="failures">0.025s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getAll_UsesCustomParameters_WhenProvided()</td>
+<td class="failures">0.016s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getAll_UsesDefaultParameters_WhenNotProvided()</td>
+<td class="failures">0.018s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getMe_ReturnsNotFound_WhenUserNotFound()</td>
+<td class="failures">0.016s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getMe_ReturnsUnauthorized_OnUnauthenticatedUser()</td>
+<td class="failures">0.014s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">getMe_ReturnsUserInfo_OnAuthenticatedUser()</td>
+<td class="failures">0.016s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">requestAdmin_ReturnsJwt_OnValidSecret()</td>
+<td class="failures">0.388s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">requestAdmin_ReturnsUnauthorized_OnInvalidSecret()</td>
+<td class="failures">0.023s</td>
+<td class="failures">failed</td>
+</tr>
+<tr>
+<td class="failures">requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser()</td>
+<td class="failures">0.013s</td>
+<td class="failures">failed</td>
+</tr>
+</table>
+</div>
+<div class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>14:41:46.043 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.bankcards.BankCardsManagementApplication for test class com.example.bankcards.controller.UserControllerImplTest
+2025-09-03T14:41:46.669+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] c.e.b.controller.UserControllerImplTest  : Starting UserControllerImplTest using Java 17.0.16 with PID 10812 (started by user in D:\Develop\projects\IntelliJIDEA\BankCardsManagement)
+2025-09-03T14:41:46.672+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] c.e.b.controller.UserControllerImplTest  : The following 1 profile is active: &quot;dev&quot;
+2025-09-03T14:41:47.987+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'securityFilterChain' with a different definition: replacing [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=true; fallback=false; factoryBeanName=testSecurityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/example/bankcards/controller/TestSecurityConfig.class]] with [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=securityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/example/bankcards/config/SecurityConfig.class]]
+2025-09-03T14:41:47.997+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'securityFilterChain' with a different definition: replacing [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; fallback=false; factoryBeanName=securityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in class path resource [com/example/bankcards/config/SecurityConfig.class]] with [Root bean: class=null; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=true; fallback=false; factoryBeanName=userControllerImplTest.TestSecurityConfig; factoryMethodName=securityFilterChain; initMethodNames=null; destroyMethodNames=[(inferred)]; defined in com.example.bankcards.controller.UserControllerImplTest$TestSecurityConfig]
+2025-09-03T14:41:48.622+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-03T14:41:48.624+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2025-09-03T14:41:48.685+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardBlockingRequestRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T14:41:48.687+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardEncryptionKeyRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T14:41:48.691+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardHashRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T14:41:48.694+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.CardRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T14:41:48.697+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.bankcards.repository.UserRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-09-03T14:41:48.698+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65 ms. Found 0 JDBC repository interfaces.
+2025-09-03T14:41:48.716+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-09-03T14:41:48.717+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-03T14:41:48.784+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56 ms. Found 5 JPA repository interfaces.
+2025-09-03T14:41:51.200+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-03T14:41:51.289+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.22.Final
+2025-09-03T14:41:51.355+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-03T14:41:51.619+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-03T14:41:51.690+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-03T14:41:51.980+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=LIZA
+2025-09-03T14:41:51.985+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-03T14:41:52.044+03:00  WARN 10812 --- [BankCardsManagement] [    Test worker] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-03T14:41:52.093+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 2.3.232
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-03T14:41:53.576+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: drop table if exists card cascade 
+Hibernate: drop table if exists card_blocking_request cascade 
+Hibernate: drop table if exists card_encryption_key cascade 
+Hibernate: drop table if exists card_hash cascade 
+Hibernate: drop table if exists user_info cascade 
+Hibernate: create table card (balance float(53) not null, status tinyint not null check (status between 0 and 2), validity_period date not null, id uuid not null, user_id uuid not null, encrypted_number varchar(255) not null unique, primary key (id))
+Hibernate: create table card_blocking_request (card_id uuid not null unique, id uuid not null, primary key (id))
+Hibernate: create table card_encryption_key (card_id uuid not null unique, id uuid not null, encrypted_key varchar(255), primary key (id))
+Hibernate: create table card_hash (id uuid not null, hmac_hash varchar(255) not null unique, primary key (id))
+Hibernate: create table user_info (role tinyint not null check (role between 0 and 1), id uuid not null, password varchar(60) not null, login varchar(100) not null unique, primary key (id))
+Hibernate: alter table if exists card add constraint FK7nhp9rkjjv4uqubqn68d2b1yv foreign key (user_id) references user_info
+Hibernate: alter table if exists card_blocking_request add constraint FK68se09rjas53dic05ii5tdbw7 foreign key (card_id) references card
+Hibernate: alter table if exists card_encryption_key add constraint FKbf60p5bpumk0s1glgmm8l6ein foreign key (card_id) references card
+2025-09-03T14:41:53.688+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-03T14:41:54.268+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-09-03T14:41:55.428+03:00  WARN 10812 --- [BankCardsManagement] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-03T14:41:55.510+03:00  WARN 10812 --- [BankCardsManagement] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: ed8dcb2a-563c-4a97-a150-ba1cb95e686e
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2025-09-03T14:41:55.521+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-09-03T14:41:56.322+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2025-09-03T14:41:57.272+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2025-09-03T14:41:57.272+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2025-09-03T14:41:57.275+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
+2025-09-03T14:41:57.409+03:00  INFO 10812 --- [BankCardsManagement] [    Test worker] c.e.b.controller.UserControllerImplTest  : Started UserControllerImplTest in 11.183 seconds (process running for 12.995)
+
+MockHttpServletRequest:
+      HTTP Method = PATCH
+      Request URI = /api/user/admin
+       Parameters = {_csrf=[cVaNn-Jw2wiNJDZ0CFLeExlEU_78wOmyxn4jibokcbDkyOm4E2G9qNtJvmmgFAQRMH_qJSh2fsfF8N6f_x8V794cEoXd_YuN]}
+          Headers = [Content-Type:&quot;application/json;charset=UTF-8&quot;, Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJiNzY2MjAxOC05NmQxLTRlZDEtOTcwNi1kMzE1ODU2Y2YwZjAiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Njg5OTcxNywiZXhwIjoxNzU2OTAzMzE3fQ.q9QpkPkneH_e5nbfPgrRmgUakvwdmNnpoEXnqDI5rxbIjD5bp1IrZ067dSl08-HuyBwjOT0hH89Cx2OASl11Tw&quot;, Content-Length:&quot;25&quot;]
+             Body = {&quot;secret&quot;:&quot;admin-secret&quot;}
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/admin?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user/me
+       Parameters = {}
+          Headers = []
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/me?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = PATCH
+      Request URI = /api/user/admin
+       Parameters = {_csrf=[tICEYKZ7DnESMws_7BYP4hYqF0C45tRWPJgB_O099Z1af7pfhuXnVcdObUI_UW8IiDs7gCMaOiLe0-x7Bf5inosFkao_SYxp]}
+          Headers = [Content-Type:&quot;application/json;charset=UTF-8&quot;, Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MWVkYWE4Zi1kYmNiLTQwZDUtYTQ1Mi1kNjc4OTU4MDQ2NDIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Njg5OTcxNywiZXhwIjoxNzU2OTAzMzE3fQ._op5P2R3pmpRirGEHaMQ4n3SGEUYa1OpWYW0O05vmo1HaP_gpOJZJQh91jjNBLL_DcswGyDnBk_MpE24oIaSyg&quot;, Content-Length:&quot;25&quot;]
+             Body = {&quot;secret&quot;:&quot;admin-secret&quot;}
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/admin?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user
+       Parameters = {page=[0], size=[3]}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1NWI5NTQwNy1hMDU5LTRmZTctOGNlZC02YjllNzA2MWI3NzUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTY4OTk3MTcsImV4cCI6MTc1NjkwMzMxN30.p6FBeJHCltfbzcgO_nqSrW7zizVj9lkYiUmt0QMsoX3PMLtYbFgyuHR8OJMpQCMqNZSba30qy3GyB0yc5Gc0ng&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user
+       Parameters = {}
+          Headers = []
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user
+       Parameters = {}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjMTZiYmExMy01MGY5LTQyYWUtYjBjMC0wZmYxOWQ3NDc2YWMiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTY4OTk3MTcsImV4cCI6MTc1NjkwMzMxN30.j7i3_FUgO50G7LtFWhChAouhOm26tq08ObAbGl4WztadVgUsErlbGFBT7wRS_w5iEfHXwXjqlnoUlBCIFeipoQ&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user/me
+       Parameters = {}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1ZmRjZjZkNy03ZTExLTQ0ZWMtYTFhNi0zNTQyNDRjZjg4OGMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Njg5OTcxNywiZXhwIjoxNzU2OTAzMzE3fQ.3wzKYxYd6ekbu-OEQRWf8mTF870VUfHV11zpzl395b2k8Mes8N9g5BRI_RMWn7TGQj5ltsKNABqzZwn4B-DPqQ&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/me?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user
+       Parameters = {page=[1], size=[5]}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkOTMyZTM1ZS1lZWMzLTQwYmItYTNiNS1mZjBkZTQwNmJmNWQiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTY4OTk3MTcsImV4cCI6MTc1NjkwMzMxN30.RRBtWS-nPHm7gx5D81aBqD505XojLCL-zFu1l-cSQtEHSPcPYKbtwhnKj6Y9-q5z7OkIeT-DwUJa5WKbd80k9w&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = PATCH
+      Request URI = /api/user/admin
+       Parameters = {_csrf=[xE4M_QMuO7BUIA-kIwNP93g7hrVR1U5YlL9d-0-TGdUmyItvpno8mWEWC4F5FGnBES57lkFdq4w35HZ194ZlyX6mfbQQqr5c]}
+          Headers = [Content-Type:&quot;application/json;charset=UTF-8&quot;, Content-Length:&quot;25&quot;]
+             Body = {&quot;secret&quot;:&quot;admin-secret&quot;}
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/admin?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user
+       Parameters = {}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5YzM2MGFhMi0yYTZiLTQ3MDYtODllZi1lNDY5NjRkNTU4MTciLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NTY4OTk3MTgsImV4cCI6MTc1NjkwMzMxOH0.co47Fl-X_haHYuLXVoXvoqX-wYnfR2AGUVGzA_FGpz6mYNOLdSHgZhIr5E-w1Bs3K08dEaAgA8uVbhOoOFaoFw&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /api/user/me
+       Parameters = {}
+          Headers = [Authorization:&quot;Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjNWI1NzFlNS02NzNiLTQ4NmYtYTAzOS01MGFhMzJhY2FjZWMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1Njg5OTcxOCwiZXhwIjoxNzU2OTAzMzE4fQ.Da7HxEaBdZ3P8JQPl-4YXZAmsjDxp19MCgOP-h6eb2-34wEqoiAdxeQTc0-q21T-yoM5mZjKVqfrNMCso3V5tg&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_SAVED_REQUEST=DefaultSavedRequest [http://localhost/api/user/me?continue]}
+
+Handler:
+             Type = null
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 403
+    Error message = Forbidden
+          Headers = [X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="https://www.gradle.org">Gradle 8.13</a> at 3 сент. 2025 г., 14:41:58</p>
+</div>
+</div>
+</body>
+</html>

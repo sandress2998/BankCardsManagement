@@ -13,6 +13,7 @@ public interface CardSecurityService {
      *
      * @param cardEncryptionKey объект зашифрованного ключа
      * @return сохранённый объект CardEncryptionKey с установленным идентификатором
+     * @throws org.springframework.dao.DataAccessException если произошла ошибка при сохранении ключа в базе данных
      */
     CardEncryptionKey saveEncryptedKey(CardEncryptionKey cardEncryptionKey);
 
@@ -20,6 +21,7 @@ public interface CardSecurityService {
      * Удаляет зашифрованный ключ карты из базы по идентификатору.
      *
      * @param id UUID ключа для удаления
+     * @throws org.springframework.dao.DataAccessException если произошла ошибка при удалении из базы данных
      */
     void deleteEncryptedKey(UUID id);
 
@@ -28,9 +30,9 @@ public interface CardSecurityService {
      *
      * Нюансы:
      * - Используется для шифрования номеров карт.
-     * - В случае ошибки выбрасывает RuntimeException с сообщением "Internal Error".
      *
      * @return новый AES-ключ
+     * @throws RuntimeException при внутренней ошибке генерации ключа (например, криптографическая ошибка)
      */
     SecretKey generateKey();
 
@@ -43,6 +45,7 @@ public interface CardSecurityService {
      * @param data номер карты в открытом виде
      * @param key AES-ключ для шифрования
      * @return зашифрованный номер карты в виде строки
+     * @throws RuntimeException при ошибке шифрования (например, неверный ключ, сбой алгоритма)
      */
     String encryptNumber(String data, SecretKey key);
 
@@ -55,11 +58,12 @@ public interface CardSecurityService {
      * @param encryptedData зашифрованный номер карты
      * @param key AES-ключ для расшифровки
      * @return расшифрованный номер карты в виде строки
+     * @throws RuntimeException при ошибке расшифрования (например, неверный ключ, некорректные данные)
      */
     String decryptNumber(String encryptedData, SecretKey key);
 
     /**
-     * Шифрует AES-ключ с помощью мастер-ключа.
+     * Шифрует AES-ключ для хранения с помощью мастер-ключа.
      *
      * Нюансы:
      * - Используется для защиты ключей шифрования карт.
@@ -67,6 +71,7 @@ public interface CardSecurityService {
      *
      * @param key AES-ключ для шифрования
      * @return зашифрованный ключ в виде строки
+     * @throws RuntimeException при ошибке шифрования ключа
      */
     String encryptKey(SecretKey key);
 
@@ -78,6 +83,7 @@ public interface CardSecurityService {
      *
      * @param encryptedKey зашифрованный ключ в виде строки
      * @return расшифрованный AES-ключ
+     * @throws RuntimeException при ошибке расшифрования ключа (например, неверное шифрование или ключ)
      */
     SecretKey decryptKey(String encryptedKey);
 
@@ -86,10 +92,10 @@ public interface CardSecurityService {
      *
      * Нюансы:
      * - Использует HMAC-SHA256 с предварительно загруженным ключом hmacKey.
-     * - В случае ошибки выбрасывает RuntimeException с сообщением "Internal Error".
      *
      * @param data строка для хэширования
      * @return HMAC-хэш в виде строки
+     * @throws RuntimeException при ошибке хэширования (например, ошибка алгоритма или некорректный ключ)
      */
     String calculateHmac(String data);
 }

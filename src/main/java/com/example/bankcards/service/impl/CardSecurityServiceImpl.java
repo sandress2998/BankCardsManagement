@@ -2,12 +2,10 @@ package com.example.bankcards.service.impl;
 
 import com.example.bankcards.entity.CardEncryptionKey;
 import com.example.bankcards.repository.CardEncryptionKeyRepository;
-import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.util.EncryptionAES;
 import com.example.bankcards.util.HmacUtils;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,28 +16,26 @@ import java.util.UUID;
 
 @Service
 public class CardSecurityServiceImpl implements CardSecurityService {
-    @Autowired
-    private CardRepository cardRepository;
 
-    @Autowired
-    private CardEncryptionKeyRepository cardEncryptionKeyRepository;
+    private final CardEncryptionKeyRepository cardEncryptionKeyRepository;
 
-    // Мастер-ключ из настроек
-    private final SecretKeySpec masterKey;
-
-    private final SecretKey hmacKey;
+    public final SecretKeySpec masterKey; // Мастер-ключ из настроек
+    public final SecretKey hmacKey;
 
     public CardSecurityServiceImpl(
         @Value("${security.card-number.master-key}") String masterKeyStr,
-        @Value("${security.card-number.hmac}") String hmacKeyStr
+        @Value("${security.card-number.hmac}") String hmacKeyStr,
+        CardEncryptionKeyRepository cardEncryptionKeyRepository
     ) {
+        this.cardEncryptionKeyRepository = cardEncryptionKeyRepository;
+
         Base64.Decoder decoder = Base64.getDecoder();
         // Инициализируем мастер-ключ из строки base64 (если строка другая — трансформировать)
 
-        byte[] hmacKeyBytes = Base64.getDecoder().decode(hmacKeyStr);
+        byte[] hmacKeyBytes = decoder.decode(hmacKeyStr);
         this.hmacKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA256");
 
-        byte[] decodedKey = Base64.getDecoder().decode(masterKeyStr);
+        byte[] decodedKey = decoder.decode(masterKeyStr);
         this.masterKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
 

@@ -20,13 +20,13 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">1</div>
+<div class="counter">12</div>
 <p>tests</p>
 </div>
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">0</div>
+<div class="counter">11</div>
 <p>failures</p>
 </div>
 </td>
@@ -38,7 +38,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.029s</div>
+<div class="counter">0.587s</div>
 <p>duration</p>
 </div>
 </td>
@@ -47,8 +47,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox success" id="successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures" id="successRate">
+<div class="percent">8%</div>
 <p>successful</p>
 </div>
 </td>
@@ -58,12 +58,64 @@
 <div class="tab-container">
 <ul class="tabLinks">
 <li>
+<a href="#">Failed tests</a>
+</li>
+<li>
 <a href="#">Packages</a>
 </li>
 <li>
 <a href="#">Classes</a>
 </li>
 </ul>
+<div class="tab">
+<h2>Failed tests</h2>
+<ul class="linkList">
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getAll_ReturnsEmptyList_WhenNoUsersFound()">getAll_ReturnsEmptyList_WhenNoUsersFound()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getAll_ReturnsUnauthorized_OnUnauthenticatedUser()">getAll_ReturnsUnauthorized_OnUnauthenticatedUser()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getAll_ReturnsUsersList_OnAdminUser()">getAll_ReturnsUsersList_OnAdminUser()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getAll_UsesCustomParameters_WhenProvided()">getAll_UsesCustomParameters_WhenProvided()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getAll_UsesDefaultParameters_WhenNotProvided()">getAll_UsesDefaultParameters_WhenNotProvided()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getMe_ReturnsNotFound_WhenUserNotFound()">getMe_ReturnsNotFound_WhenUserNotFound()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getMe_ReturnsUnauthorized_OnUnauthenticatedUser()">getMe_ReturnsUnauthorized_OnUnauthenticatedUser()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#getMe_ReturnsUserInfo_OnAuthenticatedUser()">getMe_ReturnsUserInfo_OnAuthenticatedUser()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#requestAdmin_ReturnsJwt_OnValidSecret()">requestAdmin_ReturnsJwt_OnValidSecret()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#requestAdmin_ReturnsUnauthorized_OnInvalidSecret()">requestAdmin_ReturnsUnauthorized_OnInvalidSecret()</a>
+</li>
+<li>
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">UserControllerImplTest</a>.
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html#requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser()">requestAdmin_ReturnsUnauthorized_OnUnauthenticatedUser()</a>
+</li>
+</ul>
+</div>
 <div class="tab">
 <h2>Packages</h2>
 <table>
@@ -79,14 +131,14 @@
 </thead>
 <tbody>
 <tr>
-<td class="success">
-<a href="packages/com.example.bankcards.html">com.example.bankcards</a>
+<td class="failures">
+<a href="packages/com.example.bankcards.controller.html">com.example.bankcards.controller</a>
 </td>
-<td>1</td>
+<td>12</td>
+<td>11</td>
 <td>0</td>
-<td>0</td>
-<td>0.029s</td>
-<td class="success">100%</td>
+<td>0.587s</td>
+<td class="failures">8%</td>
 </tr>
 </tbody>
 </table>
@@ -106,14 +158,14 @@
 </thead>
 <tbody>
 <tr>
-<td class="success">
-<a href="classes/com.example.bankcards.BankCardEncoderTest.html">com.example.bankcards.BankCardEncoderTest</a>
+<td class="failures">
+<a href="classes/com.example.bankcards.controller.UserControllerImplTest.html">com.example.bankcards.controller.UserControllerImplTest</a>
 </td>
-<td>1</td>
+<td>12</td>
+<td>11</td>
 <td>0</td>
-<td>0</td>
-<td>0.029s</td>
-<td class="success">100%</td>
+<td>0.587s</td>
+<td class="failures">8%</td>
 </tr>
 </tbody>
 </table>
@@ -126,7 +178,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 8.13</a> at 31 авг. 2025 г., 19:44:59</p>
+<a href="https://www.gradle.org">Gradle 8.13</a> at 3 сент. 2025 г., 14:41:58</p>
 </div>
 </div>
 </body>

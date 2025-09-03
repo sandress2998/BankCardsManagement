@@ -11,7 +11,6 @@ import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.service.CardService;
-import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class CardServiceImpl implements CardService {
-    private final UserService userService;
-    @Value("${card.months-until-expires}")
-    private int monthsQuantityUntilExpiresDefault;
+    public int monthsQuantityUntilExpiresDefault;
 
     CardRepository cardRepository;
     CardHashRepository cardHashRepository;
@@ -45,18 +42,20 @@ public class CardServiceImpl implements CardService {
     CardBlockingRequestRepository cardBlockingRequestRepository;
 
     public CardServiceImpl(
+        @Value("${card.months-until-expires}")
+        int monthsQuantityUntilExpiresDefault,
         CardRepository cardRepository,
         CardSecurityService cardSecurityService,
         UserRepository userRepository,
         CardHashRepository cardHashRepository,
-        CardBlockingRequestRepository cardBlockingRequestRepository,
-        UserService userService) {
+        CardBlockingRequestRepository cardBlockingRequestRepository
+    ) {
+        this.monthsQuantityUntilExpiresDefault = monthsQuantityUntilExpiresDefault;
         this.cardRepository = cardRepository;
         this.cardSecurityService = cardSecurityService;
         this.userRepository = userRepository;
         this.cardHashRepository = cardHashRepository;
         this.cardBlockingRequestRepository = cardBlockingRequestRepository;
-        this.userService = userService;
     }
 
     public LocalDate setValidityPeriod(Integer monthsQuantity) {
@@ -296,8 +295,10 @@ public class CardServiceImpl implements CardService {
 
     ///  Функции, работающие с зашифрованными данными
 
-    /** Функция, расшифровывающая номер карты по переданному объекту Card */
-    private String getCardNumber(Card card) {
+    /** Функция, расшифровывающая номер карты по переданному объекту Card
+    * @throws RuntimeException если произошла ошибка про расшифровании
+    */
+    public String getCardNumber(Card card) {
         try {
             CardEncryptionKey encryptionKey = card.getEncryptionKey();
             SecretKey decryptedKey = cardSecurityService.decryptKey(encryptionKey.getEncryptedKey());
@@ -307,8 +308,11 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    /** Функция, по номеру карты определяющая объект Card (извлекается из базы данных) */
-    private Card getCardByNumber(String cardNumber) {
+    /** Функция, по номеру карты определяющая объект Card (извлекается из базы данных)
+     *  @throws com.example.bankcards.exception.NotFoundException если карта не была найдена
+     * @throws RuntimeException если расшифрование не удалось
+     */
+    public Card getCardByNumber(String cardNumber) {
         // сначала найдем все карты, которые принадлежат пользователю
         UUID id = UUID.fromString(getAuthData().getName());
         List<Card> cards = cardRepository.findByOwnerId(id);
@@ -360,8 +364,9 @@ public class CardServiceImpl implements CardService {
         );
     }
 
-    ///  Получение/генерация доп. данных
+    ///  Получение/генерация вспомогательных данных
 
+    /** @throws UnauthorizedException если пользователь не авторизован */
     private Authentication getAuthData() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -372,8 +377,10 @@ public class CardServiceImpl implements CardService {
         return auth;
     }
 
-    /** Генерирует уникальный номер карты. Гарантирует что карты с таким номером не существует. */
-    private String generateUniqueCardNumber()  {
+    /** Генерирует уникальный номер карты. Гарантирует что карты с таким номером не существует.
+    * @throws RuntimeException если генерация номера прошла неудачно
+    */
+    public String generateUniqueCardNumber()  {
         StringBuilder resultNumber;
         String resultHash;
 
@@ -402,6 +409,7 @@ public class CardServiceImpl implements CardService {
         throw new RuntimeException("Too much attempts to generate card number. Something went wrong.");
     }
 
+    /** @throws com.example.bankcards.exception.NotFoundException если карта не была найдена */
     private Card getCardById(UUID cardId) {
         Card card = cardRepository.findCardById(cardId);
 
@@ -414,7 +422,8 @@ public class CardServiceImpl implements CardService {
 
     ///  Различные проверки
 
-    private void validateBalanceUpdateCorrect(Card card, double sum) {
+    /** @throws IllegalArgumentException если операция с балансом выходит за рамку допустимого */
+    public void validateBalanceUpdateCorrect(Card card, double sum) {
         double newBalance;
         double currentBalance = card.getBalance();
         if (currentBalance > Double.MAX_VALUE - sum) {
@@ -426,7 +435,8 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void checkCardAvailable(Card card) {
+    /** @throws AccessDeniedException если карта не активна ( */
+    public void checkCardAvailable(Card card) {
         if (!(card.getStatus() == Card.Status.ACTIVE
             && !card.getValidityPeriod().isBefore(LocalDate.now()))) {
             throw new AccessDeniedException("Card is not available");

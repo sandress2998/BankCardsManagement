@@ -1,0 +1,26 @@
+databaseChangeLog:
+  # Создание таблицы хешей карт
+  - changeSet:
+      context: prod
+      id: 006-create-card-hash-table
+      author: developer
+      changes:
+        - createTable:
+            tableName: card_hash
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: hmac_hash
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: card_hash

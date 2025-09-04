@@ -1,5 +1,6 @@
 package com.example.bankcards.security;
 
+import com.example.bankcards.dto.UserAuthInfo;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
@@ -55,11 +56,9 @@ public class JwtFilter extends OncePerRequestFilter {
             if (header.startsWith("Bearer ")) {
                 String token = header.substring(7);
 
-                User user = jwtService.validateToken(token);
-
-                if (user == null) {
-                    throw new UnauthorizedException("Invalid token");
-                }
+                // Что у нас есть: мы в базе данных ищем пользователя. Если не находим - ошибка
+                // Что должно быть: если Claims извлекаются нормально, то все хорошо. Если нет - кидается ошибка
+                UserAuthInfo user = jwtService.extractUserAuthInfo(token);
 
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     JwtAuthenticationToken authentication = new JwtAuthenticationToken(user, token);
@@ -80,9 +79,9 @@ public class JwtFilter extends OncePerRequestFilter {
         private final String id;
         private final String jwt;
 
-        public JwtAuthenticationToken(User user, String jwt) {
-            super(mapRoleToAuthorities(user.getRole()));
-            this.id = user.getId().toString();
+        public JwtAuthenticationToken(UserAuthInfo user, String jwt) {
+            super(mapRoleToAuthorities(user.role()));
+            this.id = user.id().toString();
             this.jwt = jwt;
             setAuthenticated(true); // Указывает, что токен валиден и пользователь уже аутентифицирован
         }

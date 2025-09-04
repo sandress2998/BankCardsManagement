@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.env.MockEnvironment;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,10 +30,13 @@ class CardSecurityServiceImplTest {
 
     String masterKeyStr = Base64.getEncoder().encodeToString("0123456789abcdef".getBytes());
     String hmacKeyStr = Base64.getEncoder().encodeToString("abcdef9876543210".getBytes());
+    MockEnvironment env = new MockEnvironment()
+        .withProperty("security.card.number.key", masterKeyStr)
+        .withProperty("security.card.number.hmac", hmacKeyStr);
 
     @BeforeEach
     void setUp() {
-        service = new CardSecurityServiceImpl(masterKeyStr, hmacKeyStr, cardEncryptionKeyRepository);
+        service = new CardSecurityServiceImpl(env, cardEncryptionKeyRepository);
     }
 
     // saveEncryptedKey - успешное сохранение

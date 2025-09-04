@@ -14,13 +14,13 @@ import com.example.bankcards.util.BCryptEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -39,16 +39,17 @@ class UserServiceImplTest {
     @Mock JwtService jwtService;
     @Mock Authentication authentication;
     @Mock SecurityContext securityContext;
+    MockEnvironment env = new MockEnvironment().withProperty("security.admin.secret", "hashed_admin_secret");
 
-    @InjectMocks UserServiceImpl service;
+    UserServiceImpl service;
 
     String validLogin = "alex";
     String longLogin = "a".repeat(User.LOGIN_MAX_LENGTH + 1);
 
     @BeforeEach
     void setUp() {
-        service.hashedSecretForAdmin = "hashed_admin_secret";
         SecurityContextHolder.clearContext();
+        service = new UserServiceImpl(env, userRepository, jwtService);
     }
 
     // findByLogin

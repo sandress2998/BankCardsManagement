@@ -23,6 +23,7 @@ public class Card {
     @Column(name = "validity_period", nullable = false)
     private LocalDate validityPeriod;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Status status;
 

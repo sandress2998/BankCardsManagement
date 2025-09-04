@@ -1,0 +1,37 @@
+databaseChangeLog:
+  # Создание таблицы ключей шифрования карт
+  - changeSet:
+      context: prod
+      id: 004-create-card-encryption-key-table
+      author: developer
+      changes:
+        - createTable:
+            tableName: card_encryption_key
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: encrypted_key
+                  type: varchar(255)
+        # Внешний ключ на карту (OneToOne связь)
+        - addForeignKeyConstraint:
+            baseTableName: card_encryption_key
+            baseColumnNames: card_id
+            constraintName: fk_card_encryption_key_card
+            referencedTableName: card
+            referencedColumnNames: id
+            onDelete: CASCADE
+      rollback:
+        - dropTable:
+            tableName: card_encryption_key

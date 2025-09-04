@@ -1,10 +1,10 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: BankCardsManagement
   main:
     banner-mode: off
-  profiles:
-    active: dev
   web:
     resources:
       add-mappings: false
@@ -17,10 +17,3 @@ management:
     web:
       exposure:
         include: health,info,openapi,swagger-ui
-
-#Что нужно сделать:
-#
-#  - Указать настройки подключения к базе данных.
-#  - Указать порт приложения.
-#  - Настроить параметры безопасности и JWT.
-#  - Включить Swagger UI.

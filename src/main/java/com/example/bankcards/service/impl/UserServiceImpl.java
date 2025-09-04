@@ -12,7 +12,7 @@ import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.util.BCryptEncoder;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,16 +28,17 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Value("${security.admin.secret}")
-    public String hashedSecretForAdmin;
+    private final String hashedSecretForAdmin;
 
     UserRepository userRepository;
     JwtService jwtService;
 
     public UserServiceImpl(
+        Environment env,
         UserRepository userRepository,
         JwtService jwtService
     ) {
+        hashedSecretForAdmin = env.getProperty("security.admin.secret");;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
     }
@@ -71,6 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public JwtResponse requestAdmin(AdminRequest request) {
+        System.out.println("secret: " + hashedSecretForAdmin);
         Authentication authData = getAuthData();
         UUID id = UUID.fromString(authData.getName());
         checkIsExistById(id);

@@ -1,13 +1,13 @@
 package com.example.bankcards.security.impl;
 
+import com.example.bankcards.dto.UserAuthInfo;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UnauthorizedException;
-import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -19,21 +19,14 @@ import java.util.UUID;
 
 @Service
 public class JwtServiceImpl implements JwtService {
-
-    private final UserRepository userRepository;
-
     private final SecretKey secretKey;
 
-    private final Long duration;
+    private final Long duration; // in minutes
 
-    public JwtServiceImpl(
-        UserRepository userRepository,
-        @Value("${security.jwt.secret}") String secretString,
-        @Value("${security.jwt.duration}") Long duration
-    ) {
-        this.userRepository = userRepository;
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretString));
-        this.duration = duration;
+    public JwtServiceImpl(Environment env) {
+        String b64 = env.getRequiredProperty("security.jwt.secret");
+        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(b64));
+        this.duration = env.getProperty("security.jwt.duration", Long.class, 60L);
     }
 
     @Override
@@ -52,17 +45,21 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public User validateToken(String token) {
+    public UserAuthInfo extractUserAuthInfo(String token) {
         Claims claims = extractClaims(token);
 
-        String id = claims.getSubject();
-        User user = userRepository.findUserById(UUID.fromString(id));
+        try {
+            UUID id = UUID.fromString(claims.getSubject());
+            User.Role role = switch (claims.get("role", String.class)) {
+                case "ADMIN" -> User.Role.ADMIN;
+                case "USER" -> User.Role.USER;
+                default -> throw new UnauthorizedException("Invalid role");
+            };
 
-        if (user == null) {
-            throw new UnauthorizedException("User not found");
+            return new UserAuthInfo(id, role);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid headers");
         }
-
-        return user;
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,15 +43,14 @@ public class CardServiceImpl implements CardService {
     CardBlockingRequestRepository cardBlockingRequestRepository;
 
     public CardServiceImpl(
-        @Value("${card.months-until-expires}")
-        int monthsQuantityUntilExpiresDefault,
+        Environment env,
         CardRepository cardRepository,
         CardSecurityService cardSecurityService,
         UserRepository userRepository,
         CardHashRepository cardHashRepository,
         CardBlockingRequestRepository cardBlockingRequestRepository
     ) {
-        this.monthsQuantityUntilExpiresDefault = monthsQuantityUntilExpiresDefault;
+        this.monthsQuantityUntilExpiresDefault = env.getProperty("card.months-until-expires", Integer.class, 24);
         this.cardRepository = cardRepository;
         this.cardSecurityService = cardSecurityService;
         this.userRepository = userRepository;
@@ -266,7 +266,7 @@ public class CardServiceImpl implements CardService {
         }
 
         cardRepository.updateCardStatus(cardId, Card.Status.BLOCKED);
-        cardBlockingRequestRepository.deleteById(cardId);
+        cardBlockingRequestRepository.deleteByCardId(cardId);
     }
 
     private CardBalanceResponse withdrawMoney(Card card, double amount) {

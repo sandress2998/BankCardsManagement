@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +41,7 @@ class CardServiceImplTest {
     @Mock CardBlockingRequestRepository cardBlockingRequestRepository;
     @Mock Authentication authentication;
     @Mock SecurityContext securityContext;
+    MockEnvironment env = new MockEnvironment().withProperty("card.months-until-expires", "24");
 
     CardServiceImpl service;
 
@@ -48,12 +50,12 @@ class CardServiceImplTest {
     @BeforeEach
     void setUp() {
         service = new CardServiceImpl(
-                defaultExpiresMonths,
-                cardRepository,
-                cardSecurityService,
-                userRepository,
-                cardHashRepository,
-                cardBlockingRequestRepository
+            env,
+            cardRepository,
+            cardSecurityService,
+            userRepository,
+            cardHashRepository,
+            cardBlockingRequestRepository
         );
 
         service.monthsQuantityUntilExpiresDefault = defaultExpiresMonths;
@@ -224,7 +226,7 @@ class CardServiceImplTest {
         service.processBlockRequest(cardId);
 
         verify(cardRepository).updateCardStatus(cardId, Card.Status.BLOCKED);
-        verify(cardBlockingRequestRepository).deleteById(cardId);
+        verify(cardBlockingRequestRepository).deleteByCardId(cardId);
     }
 }
 

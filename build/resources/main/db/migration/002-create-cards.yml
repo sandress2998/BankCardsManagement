@@ -1,0 +1,71 @@
+databaseChangeLog:
+  # Создание таблицы банковских карт
+  - changeSet:
+      context: prod
+      id: 003-create-card-table
+      author: developer
+      changes:
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: encrypted_number
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: validity_period
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: double precision
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+        # Внешний ключ на пользователя
+        - addForeignKeyConstraint:
+            baseTableName: card
+            baseColumnNames: user_id
+            constraintName: fk_card_user
+            referencedTableName: user_info
+            referencedColumnNames: id
+            onDelete: CASCADE
+        # Ограничение на статус карты (замена addCheckConstraint на SQL для Community)
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              ALTER TABLE card
+              ADD CONSTRAINT chk_card_status
+              CHECK (status IN ('ACTIVE','BLOCKED','EXPIRED'));
+      rollback:
+        # Сначала снимаем CHECK, затем удаляем таблицу
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              ALTER TABLE IF EXISTS card
+              DROP CONSTRAINT IF EXISTS chk_card_status;
+        - dropTable:
+            tableName: card
+

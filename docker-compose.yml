@@ -18,21 +18,22 @@ services:
 
 
   bank-service:
+    build: .
     image: bank-service
     container_name: bank-service
     ports:
       - "8080:8080"
     depends_on:
       - postgres-db
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     networks:
       - bank-network
 
 volumes:
   postgres_data_bank:
 
-# Что нужно сделать:
-#  - Настроить сервисы для:
-#      - PostgreSQL (или MySQL) с начальной базой.
-#      - Приложения Spring Boot (если нужно).
-#  - Открыть нужные порты (например, 5432, 8080).
-#  - Настроить volume для хранения данных БД.
+networks:
+  bank-network:

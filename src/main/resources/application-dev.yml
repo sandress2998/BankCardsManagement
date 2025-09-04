@@ -13,7 +13,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
 
-
+  liquibase:
+    enabled: false
 # Секреты надо писать в других местах (.env, к примеру) и не передавать их в
 # публичный репозиторий, но чтобы проверка была более удобная, оставила их здесь
 security:
@@ -22,9 +23,10 @@ security:
     duration: 60
   admin:
     secret: "$2a$10$H9c83bpIGYUkxmjh7WkLxuBUOj.v4SQ4cDELERm56fUxyR4lDK0wG"
-  card-number:
-    master-key: "DYw3ZcE45osN4T0FHNusKA=="
-    hmac: "ZWVkYWVlZmItZWVjZi00Yjc1LTkwZWUtNGEyYzkxN2YyY2M4Y2I4MjQzYzEtMTZkNi00YzM0LTgwOTMtNmY1ZmQxNDQ0YTg5"
+  card:
+    number:
+      key: "DYw3ZcE45osN4T0FHNusKA=="
+      hmac: "ZWVkYWVlZmItZWVjZi00Yjc1LTkwZWUtNGEyYzkxN2YyY2M4Y2I4MjQzYzEtMTZkNi00YzM0LTgwOTMtNmY1ZmQxNDQ0YTg5"
 
 card:
   months-until-expires: 24

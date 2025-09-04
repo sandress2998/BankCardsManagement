@@ -39,7 +39,7 @@ dependencies {
     implementation("com.h2database:h2:2.3.232")
 
     //Liquibase
-    //implementation("org.liquibase:liquibase-core:4.33.0")
+    implementation("org.liquibase:liquibase-core:4.33.0")
 
     //JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.7")

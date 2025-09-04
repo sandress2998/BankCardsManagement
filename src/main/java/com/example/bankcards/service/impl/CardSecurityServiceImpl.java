@@ -6,13 +6,15 @@ import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.util.EncryptionAES;
 import com.example.bankcards.util.HmacUtils;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.UUID;
+
+import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 
 @Service
 public class CardSecurityServiceImpl implements CardSecurityService {
@@ -23,20 +25,19 @@ public class CardSecurityServiceImpl implements CardSecurityService {
     public final SecretKey hmacKey;
 
     public CardSecurityServiceImpl(
-        @Value("${security.card-number.master-key}") String masterKeyStr,
-        @Value("${security.card-number.hmac}") String hmacKeyStr,
-        CardEncryptionKeyRepository cardEncryptionKeyRepository
+            Environment env,
+           CardEncryptionKeyRepository cardEncryptionKeyRepository
     ) {
         this.cardEncryptionKeyRepository = cardEncryptionKeyRepository;
 
-        Base64.Decoder decoder = Base64.getDecoder();
-        // Инициализируем мастер-ключ из строки base64 (если строка другая — трансформировать)
+        String masterKeyStr = env.getRequiredProperty("security.card.number.key");
+        String hmacKeyStr   = env.getRequiredProperty("security.card.number.hmac");
 
-        byte[] hmacKeyBytes = decoder.decode(hmacKeyStr);
-        this.hmacKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA256");
+        byte[] masterKeyBytes = decodeBase64(masterKeyStr);
+        byte[] hmacKeyBytes   = decodeBase64(hmacKeyStr);
 
-        byte[] decodedKey = decoder.decode(masterKeyStr);
-        this.masterKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        this.masterKey = new SecretKeySpec(masterKeyBytes, "AES");
+        this.hmacKey   = new SecretKeySpec(hmacKeyBytes, "HmacSHA256");
     }
 
     @Transactional

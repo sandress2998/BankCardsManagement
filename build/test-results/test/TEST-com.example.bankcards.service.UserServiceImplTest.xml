@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.bankcards.service.UserServiceImplTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2025-09-04T17:45:23.074Z" hostname="WS" time="1.331">
+  <properties/>
+  <testcase name="checkIfNotExistsByLogin_throwsIllegalArgument_whenLoginTooLong()" classname="com.example.bankcards.service.UserServiceImplTest" time="1.169"/>
+  <testcase name="findByLogin_throwsIllegalArgument_whenLoginTooLong()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <testcase name="requestAdmin_throwsAccessDenied_onWrongSecret()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.054"/>
+  <testcase name="save_returnsSavedUser()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.01"/>
+  <testcase name="requestAdmin_throwsUnauthorized_ifNotAuthenticated()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.008"/>
+  <testcase name="checkIfNotExistsByLogin_throwsBadRequest_whenUserExists()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.006"/>
+  <testcase name="findByLogin_returnsUser_whenExists()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <testcase name="findByLogin_throwsNotFoundException_whenNotFound()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.007"/>
+  <testcase name="getAll_returnsEmptyList_whenNoUsers()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.015"/>
+  <testcase name="checkIfNotExistsByLogin_ok_whenUserNotExists()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <testcase name="requestAdmin_setsAdminRole_andReturnsJwt_onCorrectSecret()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.019"/>
+  <testcase name="getUserInfoById_throwsNotFound_whenUserAbsent()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <testcase name="getUserInfoById_returnsUserInfo_whenFound()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.005"/>
+  <testcase name="getAll_returnsUserList()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <testcase name="save_throwsIllegalArgument_whenLoginTooLong()" classname="com.example.bankcards.service.UserServiceImplTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -11,13 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 
 @Tag(name = "User API", description = "API для работы с пользователями")
 @SecurityRequirement(name = "JWT")
@@ -71,6 +71,7 @@ public class UserControllerImpl implements UserController {
         }
     )
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserInfoResponse> getAll(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "3") int size

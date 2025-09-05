@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class CardControllerImpl implements CardController {
         }
     )
     @GetMapping("/full-info")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CardFullInfoResponse> getAllCards() {
         return cardService.getAllCards();
     }
@@ -57,6 +59,7 @@ public class CardControllerImpl implements CardController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public CardInfoResponse create(
         @Parameter(description = "UUID владельца карты", required = true)
         @RequestParam UUID ownerId,
@@ -79,6 +82,7 @@ public class CardControllerImpl implements CardController {
     )
     @PatchMapping("/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateCardStatus(
         @Parameter(description = "Действие смены статуса карты", required = true)
         @RequestParam Card.CardAction action,
@@ -101,6 +105,7 @@ public class CardControllerImpl implements CardController {
     )
     @DeleteMapping("/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void delete(
         @Parameter(description = "UUID удаляемой карты", required = true)
         @PathVariable UUID cardId
@@ -233,6 +238,7 @@ public class CardControllerImpl implements CardController {
     )
     @PostMapping("/blocking/process/{cardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void processBlockRequest(
         @Parameter(description = "UUID карты для блокировки", required = true)
         @PathVariable UUID cardId
@@ -249,6 +255,7 @@ public class CardControllerImpl implements CardController {
         }
     )
     @GetMapping("/blocking")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CardBlockingResponse> getBlockRequests(
         @Parameter(description = "Номер страницы пагинации", example = "0")
         @RequestParam(defaultValue = "0") int page,

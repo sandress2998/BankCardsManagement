@@ -1,0 +1,53 @@
+# Gradle build output
+/build
+/build/
+.gradle
+
+# IDE settings (IntelliJ IDEA)
+.idea/
+*.iml
+
+# Other IDEs
+.vscode/
+
+# OS/metafiles
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Java compiled classes and jars
+*.class
+*.jar
+*.war
+
+# Node dependencies (если используете Node.js)
+node_modules/
+npm-debug.log
+
+# Docker
+*.pid
+
+# Exclude coverage and reports
+/coverage/
+*.ec
+*.exec
+
+# Ignore documentation builds
+*.pdf
+
+# Mac System files
+*.DS_Store
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Specific to gradle wrapper
+gradle/wrapper/gradle-wrapper.jar
+
+# Ignore generated files by Gradle wrapper (Windows)
+gradlew.bat
+

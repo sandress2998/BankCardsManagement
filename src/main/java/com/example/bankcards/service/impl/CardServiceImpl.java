@@ -13,13 +13,11 @@ import com.example.bankcards.service.CardSecurityService;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.CardUtil;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -70,7 +68,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public CardInfoResponse create(UUID ownerId, Integer monthsQuantityUntilExpires) {
         User owner = userRepository.findUserById(ownerId);
@@ -103,7 +100,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public void updateCard(Card.CardAction cardAction, UUID cardId) {
         Card card = getCardById(cardId);
@@ -115,7 +111,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public void delete(UUID cardId)  {
         Card card = getCardById(cardId);
@@ -194,7 +189,6 @@ public class CardServiceImpl implements CardService {
 
     /** Позволяет узнать почти все данные карты, в том числе номер карты. Тестовый метод (созданный для удобства тестирования и проверки) */
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CardFullInfoResponse> getAllCards() {
         List<Card> cards = cardRepository.findAll();
         ArrayList<CardFullInfoResponse> cardsFullInfo = new ArrayList<>();
@@ -241,7 +235,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CardBlockingResponse> getBlockRequests(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
@@ -255,7 +248,6 @@ public class CardServiceImpl implements CardService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Override
     public void processBlockRequest(UUID cardId) {
         if (cardId == null) {

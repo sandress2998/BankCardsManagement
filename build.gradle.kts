@@ -63,6 +63,7 @@ openApi {
         else "http://localhost:8080/v3/api-docs"
     )
     outputDir.set(file("${projectDir}/docs"));
+    outputFileName.set("openapi.yml");
 }
 
 tasks.withType<Test> {

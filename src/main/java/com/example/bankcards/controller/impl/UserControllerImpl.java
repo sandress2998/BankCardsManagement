@@ -22,7 +22,7 @@ import java.util.UUID;
 @Tag(name = "User API", description = "API для работы с пользователями")
 @SecurityRequirement(name = "JWT")
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 

@@ -1,959 +1,1465 @@
-openapi: 3.1.0
-info:
-  title: Bank Cards Management
-  contact:
-    name: Шаманова Елизавета Алексеевна
-    email: sandress2000@mail.ru
-  version: 1.0.0
-servers:
-  - url: http://localhost:8080
-    description: Generated server url
-tags:
-  - name: User API
-    description: API для работы с пользователями
-  - name: Authentication API
-    description: API для регистрации и аутентификации пользователей
-  - name: Card API
-    description: API для управления банковскими картами
-paths:
-  /api/card:
-    get:
-      tags:
-        - Card API
-      summary: Получить список карт пользователя
-      description: Возвращает информацию о картах с возможностью фильтрации по статусу
-        и пагинации
-      operationId: getCardsInfo
-      parameters:
-        - name: id
-          in: query
-          description: UUID пользователя (опционально для администратора)
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: status
-          in: query
-          description: Статус карты для фильтрации
-          required: false
-          schema:
-            type: string
-            enum:
-              - ACTIVE
-              - BLOCKED
-              - EXPIRED
-        - name: page
-          in: query
-          description: Номер страницы пагинации
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-          example: 0
-        - name: size
-          in: query
-          description: Размер страницы пагинации
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 3
-          example: 3
-      responses:
-        "404":
-          description: Пользователь не найден
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Доступ запрещен
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Список карт пользователя
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardInfoResponse"
-      security:
-        - JWT: []
-    post:
-      tags:
-        - Card API
-      summary: Создать карту для пользователя
-      description: "Создает карту, генерирует номер и шифрует его. Требуется ownerId\
-        \ и необязательно количество месяцев до истечения срока. Доступ есть тольк\
-        о у админа"
-      operationId: create
-      parameters:
-        - name: ownerId
-          in: query
-          description: UUID владельца карты
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: monthsQuantityUntilExpires
-          in: query
-          description: Количество месяцев до окончания срока действия карты. Доступ
-            есть только у админа.
-          required: false
-          schema:
-            type: integer
-            format: int32
-      responses:
-        "404":
-          description: Пользователь не найден
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Доступ запрещен
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "201":
-          description: Информация о созданной карте
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardInfoResponse"
-      security:
-        - JWT: []
-  /api/card/transfer:
-    post:
-      tags:
-        - Card API
-      summary: Перевод средств между картами
-      description: Выполняет перевод указанной суммы с одной карты на другую.
-      operationId: doMoneyTransfer
-      requestBody:
-        description: Данные перевода
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CardTransferMoney"
-        required: true
-      responses:
-        "404":
-          description: Одна из карт не найдена
-        "400":
-          description: Некорректные данные запроса
-        "403":
-          description: Карта недоступна для операции
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "204":
-          description: Перевод выполнен
-      security:
-        - JWT: []
-  /api/card/blocking/submit:
-    post:
-      tags:
-        - Card API
-      summary: Создать заявку на блокировку карты
-      description: Отправляет заявку на блокировку карты
-      operationId: submitCardBlocking
-      requestBody:
-        description: Номер карты для блокировки
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CardNumberBody"
-        required: true
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Карта недоступна
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "201":
-          description: Заявка на блокировку создана
-      security:
-        - JWT: []
-  /api/card/blocking/process/{cardId}:
-    post:
-      tags:
-        - Card API
-      summary: Обработка заявки на блокировку карты
-      description: Меняет статус карты на BLOCKED и удаляет заявку на блокировку.
-        Доступ есть только у админа.
-      operationId: processBlockRequest
-      parameters:
-        - name: cardId
-          in: path
-          description: UUID карты для блокировки
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Некорректный ID карты
-        "403":
-          description: Доступ запрещен
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "204":
-          description: "Заявка обработана, карта заблокирована"
-      security:
-        - JWT: []
-  /api/card/balance/view:
-    post:
-      tags:
-        - Card API
-      summary: Получить баланс карты
-      description: Возвращает текущий баланс карты по номеру
-      operationId: getBalance
-      requestBody:
-        description: Номер карты
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CardNumberBody"
-        required: true
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Баланс карты
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardBalanceResponse"
-      security:
-        - JWT: []
-  /api/auth/signup:
-    post:
-      tags:
-        - Authentication API
-      summary: Регистрация нового пользователя
-      description: "Создает нового пользователя с ролью USER, возвращает JWT при у\
-        спешной регистрации."
-      operationId: signup
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthRequest"
-        required: true
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: "Нарушены условия регистрации (например, логин слишком длин\
-            ный или логин уже существует)"
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "201":
-          description: "Успешная регистрация, возвращен JWT"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/JwtResponse"
-  /api/auth/signin:
-    post:
-      tags:
-        - Authentication API
-      summary: Аутентификация пользователя (вход)
-      description: "Проверяет логин и пароль, возвращает JWT токен при успешной ау\
-        тентификации."
-      operationId: signin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthRequest"
-        required: true
-      responses:
-        "404":
-          description: Пользователь с указанным логином не найден
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Неверный логин или пароль
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: "Успешный вход, возвращен JWT"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/JwtResponse"
-  /api/user/admin:
-    patch:
-      tags:
-        - User API
-      summary: Запрос на получение роли администратора
-      description: "Аутентифицированный пользователь может запросить роль ADMIN, п\
-        ередав секрет"
-      operationId: requestAdmin
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminRequest"
-        required: true
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Ошибка аутентификации или неверный секрет
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: "Роль успешно обновлена, возвращен JWT"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/JwtResponse"
-      security:
-        - JWT: []
-  /api/card/{cardId}:
-    delete:
-      tags:
-        - Card API
-      summary: Удалить карту
-      description: Удаляет карту и связанные с ней данные. Доступ есть только у админа.
-      operationId: delete
-      parameters:
-        - name: cardId
-          in: path
-          description: UUID удаляемой карты
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Доступ запрещен
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "204":
-          description: Карта удалена
-      security:
-        - JWT: []
-    patch:
-      tags:
-        - Card API
-      summary: Обновить статус карты
-      description: Изменяет статус карты (ACTIVATE или BLOCK) по ID карты и действию.
-        Доступ есть только у админа.
-      operationId: updateCardStatus
-      parameters:
-        - name: action
-          in: query
-          description: Действие смены статуса карты
-          required: true
-          schema:
-            type: string
-            enum:
-              - ACTIVATE
-              - BLOCK
-        - name: cardId
-          in: path
-          description: UUID карты для обновления
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Доступ запрещен
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "204":
-          description: Статус карты обновлен
-      security:
-        - JWT: []
-  /api/card/balance/update:
-    patch:
-      tags:
-        - Card API
-      summary: Обновить баланс карты (пополнение/снятие)
-      description: Изменяет баланс карты в зависимости от действия WITHDRAW_MONEY
-        или DEPOSIT_MONEY
-      operationId: updateCardBalance
-      parameters:
-        - name: action
-          in: query
-          description: Действие обновления баланса
-          required: true
-          schema:
-            type: string
-            enum:
-              - DEPOSIT_MONEY
-              - WITHDRAW_MONEY
-      requestBody:
-        description: Данные для обновления баланса
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CardBalanceRequest"
-        required: true
-      responses:
-        "404":
-          description: Карта не найдена
-        "400":
-          description: Некорректные данные или операция невозможна
-        "403":
-          description: Карта недоступна
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Баланс карты обновлен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardBalanceResponse"
-      security:
-        - JWT: []
-  /api/user:
-    get:
-      tags:
-        - User API
-      summary: Получить список пользователей с пагинацией
-      description: Доступно только пользователю с ролью ADMIN
-      operationId: getAll
-      parameters:
-        - name: page
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-        - name: size
-          in: query
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 3
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Отказано в доступе
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Список пользователей
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInfoResponse"
-      security:
-        - JWT: []
-  /api/user/me:
-    get:
-      tags:
-        - User API
-      summary: Получить информацию текущего пользователя
-      description: "Возвращает данные пользователя, на основании аутентификации"
-      operationId: getMe
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Пользователь не аутентифицирован
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Данные пользователя успешно получены
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserInfoResponse"
-      security:
-        - JWT: []
-  /api/card/full-info:
-    get:
-      tags:
-        - Card API
-      summary: "Тестовый метод: Получить подробную информацию о всех картах"
-      description: Возвращает данные всех карт включая расшифрованные номера. Использовать
-        только для тестирования. Доступ есть только у админа
-      operationId: getAllCards
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: JWT отсутствует или невалидный
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Список всех карт
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardFullInfoResponse"
-      security:
-        - JWT: []
-  /api/card/blocking:
-    get:
-      tags:
-        - Card API
-      summary: Получить список заявок на блокировку карт
-      description: Возвращает список заявок на блокировку с пагинацией. Доступ есть
-        только у админа.
-      operationId: getBlockRequests
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы пагинации
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 0
-          example: 0
-        - name: size
-          in: query
-          description: Размер страницы пагинации
-          required: false
-          schema:
-            type: integer
-            format: int32
-            default: 5
-          example: 5
-      responses:
-        "404":
-          description: Not Found
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "400":
-          description: Bad Request
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Forbidden
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Unauthorized
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: Internal Server Error
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "200":
-          description: Список заявок на блокировку
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CardBlockingResponse"
-      security:
-        - JWT: []
-components:
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-        code:
-          type: integer
-          format: int32
-    CardInfoResponse:
-      type: object
-      description: "Ответ, содержащий информацию о карте"
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: UUID карты
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        maskedNumber:
-          type: string
-          description: Маскированный номер карты (для безопасности)
-          example: 1234
-        date:
-          type: string
-          description: Дата окончания срока действия карты в формате ММ/ГГ
-          example: 12/26
-        status:
-          type: string
-          description: Статус карты
-          enum:
-            - ACTIVE
-            - BLOCKED
-            - EXPIRED
-          example: ACTIVE
-        balance:
-          type: number
-          format: double
-          description: Баланс карты
-          example: 2500.75
-        owner:
-          type: string
-          description: Логин владельца карты
-          example: user123
-    CardTransferMoney:
-      type: object
-      description: Запрос на перевод денег между картами
-      properties:
-        from:
-          type: string
-          description: Номер карты отправителя
-          example: 1234-5678-9012-3456
-        to:
-          type: string
-          description: Номер карты получателя
-          example: 6543-2109-8765-4321
-        amount:
-          type: number
-          format: double
-          description: Сумма перевода
-          example: 150.0
-      required:
-        - amount
-        - from
-        - to
-    CardNumberBody:
-      type: object
-      description: "Запрос, содержащий номер карты"
-      properties:
-        number:
-          type: string
-          description: Номер карты
-          example: 1234567890123456
-    CardBalanceResponse:
-      type: object
-      description: Ответ с текущим балансом карты
-      properties:
-        balance:
-          type: number
-          format: double
-          description: Текущий баланс карты
-          example: 2500.75
-    JwtResponse:
-      type: object
-      description: Сгенерированный jwt
-      properties:
-        jwt:
-          type: string
-          description: jwt
-          example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5N2UwZjJlNC0wMzM5LTRlODQtOGQ1OS0zOGM1YjY0NjMzMDIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1NjgyMTUyNSwiZXhwIjoxNzU2ODI1MTI1fQ.ImL_47MNFoHI8lUhpWdlhfWJmRlZgu-I7PbudmVcaBrdQOp5GnaCqxkggEO7BRk6ic_Eq3YbOhlNH-YNatLvow
-    AuthRequest:
-      type: object
-      description: Запрос аутентификации или регистрации
-      properties:
-        login:
-          type: string
-          description: Логин пользователя
-          example: user123
-        password:
-          type: string
-          description: Пароль пользователя
-          example: Password123
-    AdminRequest:
-      type: object
-      description: Запрос для получения роли администратора
-      properties:
-        secret:
-          type: string
-          description: Секретный пароль для получения роли администратора. В данный
-            момент он равен d337d192-4421-46fc-b81a-cb3152f3f328
-          example: d337d192-4421-46fc-b81a-cb3152f3f328
-    CardBalanceRequest:
-      type: object
-      description: Запрос на изменение баланса карты
-      properties:
-        cardNumber:
-          type: string
-          description: Номер карты
-          example: 1234-5678-9012-3456
-        amount:
-          type: number
-          format: double
-          description: "Сумма для изменения баланса. Положительное число для попол\
-            нения, отрицательное для снятия"
-          example: 100.5
-      required:
-        - amount
-        - cardNumber
-    UserInfoResponse:
-      type: object
-      description: Информация о пользователе
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Уникальный идентификатор пользователя
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        login:
-          type: string
-          description: Логин пользователя
-          example: user123
-        role:
-          type: string
-          description: Роль пользователя
-          enum:
-            - USER
-            - ADMIN
-          example: USER
-    CardFullInfoResponse:
-      type: object
-      description: Полная информация по карте (для тестовых целей)
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: UUID карты
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        number:
-          type: string
-          description: Номер карты (расшифрованный)
-          example: 1234-5678-9012-3456
-        owner:
-          type: string
-          description: Логин владельца карты
-          example: user123
-        validityPeriod:
-          type: string
-          format: date
-          description: Дата окончания срока действия карты
-          example: 2026-12-31
-        status:
-          type: string
-          description: Статус карты
-          enum:
-            - ACTIVE
-            - BLOCKED
-            - EXPIRED
-          example: ACTIVE
-        balance:
-          type: number
-          format: double
-          description: Баланс карты
-          example: 2500.75
-    CardBlockingResponse:
-      type: object
-      description: Ответ на запрос списка заявок на блокировку карты
-      properties:
-        cardId:
-          type: string
-          format: uuid
-          description: "UUID карты, по которой отправлена заявка на блокировку"
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Bank Cards Management",
+    "contact": {
+      "name": "Шаманова Елизавета Алексеевна",
+      "email": "sandress2000@mail.ru"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User API",
+      "description": "API для работы с пользователями"
+    },
+    {
+      "name": "Authentication API",
+      "description": "API для регистрации и аутентификации пользователей"
+    },
+    {
+      "name": "Card API",
+      "description": "API для управления банковскими картами"
+    }
+  ],
+  "paths": {
+    "/api/cards": {
+      "get": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Получить список карт пользователя",
+        "description": "Возвращает информацию о картах с возможностью фильтрации по статусу и пагинации",
+        "operationId": "getCardsInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "UUID пользователя (опционально для администратора)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Статус карты для фильтрации",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "BLOCKED",
+                "EXPIRED"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Номер страницы пагинации",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Размер страницы пагинации",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 3
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Доступ запрещен"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список карт пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardInfoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Создать карту для пользователя",
+        "description": "Создает карту, генерирует номер и шифрует его. Требуется ownerId и необязательно количество месяцев до истечения срока. Доступ есть только у админа",
+        "operationId": "create",
+        "parameters": [
+          {
+            "name": "ownerId",
+            "in": "query",
+            "description": "UUID владельца карты",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "monthsQuantityUntilExpires",
+            "in": "query",
+            "description": "Количество месяцев до окончания срока действия карты. Доступ есть только у админа.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Доступ запрещен"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Информация о созданной карте",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardInfoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/transfer": {
+      "post": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Перевод средств между картами",
+        "description": "Выполняет перевод указанной суммы с одной карты на другую.",
+        "operationId": "doMoneyTransfer",
+        "requestBody": {
+          "description": "Данные перевода",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardTransferMoney"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Карта недоступна для операции"
+          },
+          "400": {
+            "description": "Некорректные данные запроса"
+          },
+          "404": {
+            "description": "Одна из карт не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Перевод выполнен"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/blocking/submit": {
+      "post": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Создать заявку на блокировку карты",
+        "description": "Отправляет заявку на блокировку карты",
+        "operationId": "submitCardBlocking",
+        "requestBody": {
+          "description": "Номер карты для блокировки",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardNumberBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Карта недоступна"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Заявка на блокировку создана"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/blocking/process/{cardId}": {
+      "post": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Обработка заявки на блокировку карты",
+        "description": "Меняет статус карты на BLOCKED и удаляет заявку на блокировку. Доступ есть только у админа.",
+        "operationId": "processBlockRequest",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "description": "UUID карты для блокировки",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Доступ запрещен"
+          },
+          "400": {
+            "description": "Некорректный ID карты"
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Заявка обработана, карта заблокирована"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/balance/view": {
+      "post": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Получить баланс карты",
+        "description": "Возвращает текущий баланс карты по номеру",
+        "operationId": "getBalance",
+        "requestBody": {
+          "description": "Номер карты",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardNumberBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Баланс карты",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBalanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "tags": [
+          "Authentication API"
+        ],
+        "summary": "Регистрация нового пользователя",
+        "description": "Создает нового пользователя с ролью USER, возвращает JWT при успешной регистрации.",
+        "operationId": "signup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Нарушены условия регистрации (например, логин слишком длинный или логин уже существует)"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Успешная регистрация, возвращен JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/signin": {
+      "post": {
+        "tags": [
+          "Authentication API"
+        ],
+        "summary": "Аутентификация пользователя (вход)",
+        "description": "Проверяет логин и пароль, возвращает JWT токен при успешной аутентификации.",
+        "operationId": "signin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь с указанным логином не найден"
+          },
+          "401": {
+            "description": "Неверный логин или пароль"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Успешный вход, возвращен JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/admin": {
+      "patch": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "Запрос на получение роли администратора",
+        "description": "Аутентифицированный пользователь может запросить роль ADMIN, передав секрет",
+        "operationId": "requestAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ошибка аутентификации или неверный секрет"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Роль успешно обновлена, возвращен JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}": {
+      "delete": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Удалить карту",
+        "description": "Удаляет карту и связанные с ней данные. Доступ есть только у админа.",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "cardId",
+            "in": "path",
+            "description": "UUID удаляемой карты",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Доступ запрещен"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Карта удалена"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Обновить статус карты",
+        "description": "Изменяет статус карты (ACTIVATE или BLOCK) по ID карты и действию. Доступ есть только у админа.",
+        "operationId": "updateCardStatus",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "description": "Действие смены статуса карты",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVATE",
+                "BLOCK"
+              ]
+            }
+          },
+          {
+            "name": "cardId",
+            "in": "path",
+            "description": "UUID карты для обновления",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Доступ запрещен"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Статус карты обновлен"
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/balance/update": {
+      "patch": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Обновить баланс карты (пополнение/снятие)",
+        "description": "Изменяет баланс карты в зависимости от действия WITHDRAW_MONEY или DEPOSIT_MONEY",
+        "operationId": "updateCardBalance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "description": "Действие обновления баланса",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DEPOSIT_MONEY",
+                "WITHDRAW_MONEY"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Данные для обновления баланса",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardBalanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Карта недоступна"
+          },
+          "400": {
+            "description": "Некорректные данные или операция невозможна"
+          },
+          "404": {
+            "description": "Карта не найдена"
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Баланс карты обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBalanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "Получить список пользователей с пагинацией",
+        "description": "Доступно только пользователю с ролью ADMIN",
+        "operationId": "getAll",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Отказано в доступе"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список пользователей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "User API"
+        ],
+        "summary": "Получить информацию текущего пользователя",
+        "description": "Возвращает данные пользователя, на основании аутентификации",
+        "operationId": "getMe",
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не аутентифицирован"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Данные пользователя успешно получены",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/full-info": {
+      "get": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Тестовый метод: Получить подробную информацию о всех картах",
+        "description": "Возвращает данные всех карт включая расшифрованные номера. Использовать только для тестирования. Доступ есть только у админа",
+        "operationId": "getAllCards",
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT отсутствует или невалидный"
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список всех карт",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardFullInfoResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/cards/blocking": {
+      "get": {
+        "tags": [
+          "Card API"
+        ],
+        "summary": "Получить список заявок на блокировку карт",
+        "description": "Возвращает список заявок на блокировку с пагинацией. Доступ есть только у админа.",
+        "operationId": "getBlockRequests",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Номер страницы пагинации",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Размер страницы пагинации",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            },
+            "example": 5
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Список заявок на блокировку",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardBlockingResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CardInfoResponse": {
+        "type": "object",
+        "description": "Ответ, содержащий информацию о карте",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID карты",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "maskedNumber": {
+            "type": "string",
+            "description": "Маскированный номер карты (для безопасности)",
+            "example": 1234
+          },
+          "date": {
+            "type": "string",
+            "description": "Дата окончания срока действия карты в формате ММ/ГГ",
+            "example": "12/26"
+          },
+          "status": {
+            "type": "string",
+            "description": "Статус карты",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED"
+            ],
+            "example": "ACTIVE"
+          },
+          "balance": {
+            "type": "number",
+            "format": "double",
+            "description": "Баланс карты",
+            "example": 2500.75
+          },
+          "owner": {
+            "type": "string",
+            "description": "Логин владельца карты",
+            "example": "user123"
+          }
+        }
+      },
+      "CardTransferMoney": {
+        "type": "object",
+        "description": "Запрос на перевод денег между картами",
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "Номер карты отправителя",
+            "example": "1234-5678-9012-3456"
+          },
+          "to": {
+            "type": "string",
+            "description": "Номер карты получателя",
+            "example": "6543-2109-8765-4321"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Сумма перевода",
+            "example": 150.0
+          }
+        },
+        "required": [
+          "amount",
+          "from",
+          "to"
+        ]
+      },
+      "CardNumberBody": {
+        "type": "object",
+        "description": "Запрос, содержащий номер карты",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Номер карты",
+            "example": 1234567890123456
+          }
+        }
+      },
+      "CardBalanceResponse": {
+        "type": "object",
+        "description": "Ответ с текущим балансом карты",
+        "properties": {
+          "balance": {
+            "type": "number",
+            "format": "double",
+            "description": "Текущий баланс карты",
+            "example": 2500.75
+          }
+        }
+      },
+      "JwtResponse": {
+        "type": "object",
+        "description": "Сгенерированный jwt",
+        "properties": {
+          "jwt": {
+            "type": "string",
+            "description": "jwt",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5N2UwZjJlNC0wMzM5LTRlODQtOGQ1OS0zOGM1YjY0NjMzMDIiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc1NjgyMTUyNSwiZXhwIjoxNzU2ODI1MTI1fQ.ImL_47MNFoHI8lUhpWdlhfWJmRlZgu-I7PbudmVcaBrdQOp5GnaCqxkggEO7BRk6ic_Eq3YbOhlNH-YNatLvow"
+          }
+        }
+      },
+      "AuthRequest": {
+        "type": "object",
+        "description": "Запрос аутентификации или регистрации",
+        "properties": {
+          "login": {
+            "type": "string",
+            "description": "Логин пользователя",
+            "example": "user123"
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя",
+            "example": "Password123"
+          }
+        }
+      },
+      "AdminRequest": {
+        "type": "object",
+        "description": "Запрос для получения роли администратора",
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "Секретный пароль для получения роли администратора. В данный момент он равен d337d192-4421-46fc-b81a-cb3152f3f328",
+            "example": "d337d192-4421-46fc-b81a-cb3152f3f328"
+          }
+        }
+      },
+      "CardBalanceRequest": {
+        "type": "object",
+        "description": "Запрос на изменение баланса карты",
+        "properties": {
+          "cardNumber": {
+            "type": "string",
+            "description": "Номер карты",
+            "example": "1234-5678-9012-3456"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Сумма для изменения баланса. Положительное число для пополнения, отрицательное для снятия",
+            "example": 100.5
+          }
+        },
+        "required": [
+          "amount",
+          "cardNumber"
+        ]
+      },
+      "UserInfoResponse": {
+        "type": "object",
+        "description": "Информация о пользователе",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Уникальный идентификатор пользователя",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "login": {
+            "type": "string",
+            "description": "Логин пользователя",
+            "example": "user123"
+          },
+          "role": {
+            "type": "string",
+            "description": "Роль пользователя",
+            "enum": [
+              "USER",
+              "ADMIN"
+            ],
+            "example": "USER"
+          }
+        }
+      },
+      "CardFullInfoResponse": {
+        "type": "object",
+        "description": "Полная информация по карте (для тестовых целей)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID карты",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          },
+          "number": {
+            "type": "string",
+            "description": "Номер карты (расшифрованный)",
+            "example": "1234-5678-9012-3456"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Логин владельца карты",
+            "example": "user123"
+          },
+          "validityPeriod": {
+            "type": "string",
+            "format": "date",
+            "description": "Дата окончания срока действия карты",
+            "example": "2026-12-31"
+          },
+          "status": {
+            "type": "string",
+            "description": "Статус карты",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "EXPIRED"
+            ],
+            "example": "ACTIVE"
+          },
+          "balance": {
+            "type": "number",
+            "format": "double",
+            "description": "Баланс карты",
+            "example": 2500.75
+          }
+        }
+      },
+      "CardBlockingResponse": {
+        "type": "object",
+        "description": "Ответ на запрос списка заявок на блокировку карты",
+        "properties": {
+          "cardId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID карты, по которой отправлена заявка на блокировку",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        }
+      }
+    }
+  }
+}

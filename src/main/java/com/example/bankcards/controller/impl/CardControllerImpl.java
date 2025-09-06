@@ -22,7 +22,7 @@ import java.util.UUID;
 @Tag(name = "Card API", description = "API для управления банковскими картами")
 @SecurityRequirement(name = "JWT")
 @RestController
-@RequestMapping("/api/card")
+@RequestMapping("/api/cards")
 public class CardControllerImpl implements CardController {
 
     private final CardService cardService;

@@ -7,19 +7,16 @@ import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.security.SecurityService;
 import com.example.bankcards.service.UserService;
-import com.example.bankcards.util.BCryptEncoder;
+import com.example.bankcards.util.security.BCryptEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
     private final JwtService jwtService;
     private final UserService userService;
-
-    public SecurityServiceImpl(JwtService jwtService, UserService userService) {
-        this.jwtService = jwtService;
-        this.userService = userService;
-    }
 
     @Override
     public JwtResponse signin(AuthRequest request) {

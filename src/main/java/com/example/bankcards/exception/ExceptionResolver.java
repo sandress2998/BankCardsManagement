@@ -79,6 +79,7 @@ public class ExceptionResolver implements ErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse handleInternalError(RuntimeException ex) {
+        System.out.println("ERROR: " + ex.getMessage());
         String message = "Internal server error";
         return new ErrorResponse(message, HttpStatus.INTERNAL_SERVER_ERROR.value());
     }

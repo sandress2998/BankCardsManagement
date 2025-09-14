@@ -1,6 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.AdminRequest;
+import com.example.bankcards.dto.RoleRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
@@ -52,7 +52,7 @@ public interface UserService {
      * @return объект AuthResponse с новым JWT токеном
      * @throws org.springframework.security.access.AccessDeniedException если пароль неправильный
      */
-    JwtResponse requestAdmin(AdminRequest request);
+    JwtResponse requestRole(RoleRequest request);
 
     /**
      * Получает список всех пользователей с пагинацией.

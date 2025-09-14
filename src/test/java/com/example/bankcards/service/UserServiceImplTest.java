@@ -1,6 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.AdminRequest;
+import com.example.bankcards.dto.RoleRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
@@ -10,7 +10,7 @@ import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.impl.UserServiceImpl;
-import com.example.bankcards.util.BCryptEncoder;
+import com.example.bankcards.util.security.BCryptEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -107,7 +107,7 @@ class UserServiceImplTest {
     @Test
     void requestAdmin_setsAdminRole_andReturnsJwt_onCorrectSecret() {
         UUID userId = UUID.randomUUID();
-        AdminRequest req = new AdminRequest("supersecret");
+        RoleRequest req = new RoleRequest(User.Role.ADMIN,"supersecret");
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
         when(authentication.getName()).thenReturn(userId.toString());
@@ -117,7 +117,7 @@ class UserServiceImplTest {
         try (MockedStatic<BCryptEncoder> encMock = mockStatic(BCryptEncoder.class)) {
             encMock.when(() -> BCryptEncoder.matches("supersecret", "hashed_admin_secret")).thenReturn(true);
             when(jwtService.changeRoleInJwt("jwt", User.Role.ADMIN)).thenReturn("new_jwt");
-            JwtResponse resp = service.requestAdmin(req);
+            JwtResponse resp = service.requestRole(req);
             assertEquals("new_jwt", resp.jwt());
             verify(userRepository).updateRole(eq(userId), eq(User.Role.ADMIN));
         }
@@ -126,7 +126,7 @@ class UserServiceImplTest {
     @Test
     void requestAdmin_throwsAccessDenied_onWrongSecret() {
         UUID userId = UUID.randomUUID();
-        AdminRequest req = new AdminRequest("badsecret");
+        RoleRequest req = new RoleRequest(User.Role.ADMIN, "badsecret");
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
         when(authentication.getName()).thenReturn(userId.toString());
@@ -135,7 +135,7 @@ class UserServiceImplTest {
         when(userRepository.existsById(userId)).thenReturn(true);
         try (MockedStatic<BCryptEncoder> encMock = mockStatic(BCryptEncoder.class)) {
             encMock.when(() -> BCryptEncoder.matches("badsecret", "hashed_admin_secret")).thenReturn(false);
-            assertThrows(AccessDeniedException.class, () -> service.requestAdmin(req));
+            assertThrows(AccessDeniedException.class, () -> service.requestRole(req));
         }
     }
 
@@ -143,8 +143,8 @@ class UserServiceImplTest {
     void requestAdmin_throwsUnauthorized_ifNotAuthenticated() {
         when(securityContext.getAuthentication()).thenReturn(null);
         SecurityContextHolder.setContext(securityContext);
-        AdminRequest req = new AdminRequest("anysecret");
-        assertThrows(UnauthorizedException.class, () -> service.requestAdmin(req));
+        RoleRequest req = new RoleRequest(User.Role.ADMIN,"anysecret");
+        assertThrows(UnauthorizedException.class, () -> service.requestRole(req));
     }
 
     // getAll

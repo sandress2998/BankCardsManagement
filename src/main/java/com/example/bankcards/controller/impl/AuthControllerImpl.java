@@ -9,19 +9,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Authentication API", description = "API для регистрации и аутентификации пользователей")
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthControllerImpl implements AuthController {
 
     private final SecurityService securityService;
-
-    public AuthControllerImpl(SecurityService securityService) {
-        this.securityService = securityService;
-    }
 
     @Operation(
         summary = "Аутентификация пользователя (вход)",

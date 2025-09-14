@@ -1,12 +1,17 @@
 package com.example.bankcards.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "card_hash")
 public class CardHash {
+    // Геттеры и сеттеры
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -18,23 +23,6 @@ public class CardHash {
     public CardHash() {}
 
     public CardHash(String hmacHash) {
-        this.hmacHash = hmacHash;
-    }
-
-    // Геттеры и сеттеры
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getHmacHash() {
-        return hmacHash;
-    }
-
-    public void setHmacHash(String hmacHash) {
         this.hmacHash = hmacHash;
     }
 }

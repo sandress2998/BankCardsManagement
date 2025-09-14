@@ -1,8 +1,8 @@
 package com.example.bankcards.controller.impl;
 
 import com.example.bankcards.controller.UserController;
-import com.example.bankcards.dto.AdminRequest;
 import com.example.bankcards.dto.JwtResponse;
+import com.example.bankcards.dto.RoleRequest;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,24 +11,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "User API", description = "API для работы с пользователями")
 @SecurityRequirement(name = "JWT")
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
-    private final UserService userService;
 
-    public UserControllerImpl(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @Operation(
         summary = "Запрос на получение роли администратора",
@@ -39,11 +36,9 @@ public class UserControllerImpl implements UserController {
             @ApiResponse(responseCode = "401", description = "Ошибка аутентификации или неверный секрет")
         }
     )
-    @PatchMapping("/admin")
+    @PostMapping("/role")
     @Override
-    public JwtResponse requestAdmin(@RequestBody AdminRequest secret) {
-        return userService.requestAdmin(secret);
-    }
+    public JwtResponse requestRole(@RequestBody RoleRequest body) { return userService.requestRole(body); }
 
     @Operation(
         summary = "Получить информацию текущего пользователя",
@@ -55,28 +50,10 @@ public class UserControllerImpl implements UserController {
         }
     )
     @GetMapping("/me")
+    @Override
     public UserInfoResponse getMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userService.getUserInfoById(UUID.fromString(auth.getName()));
-    }
-
-    @Operation(
-        summary = "Получить список пользователей с пагинацией",
-        description = "Доступно только пользователю с ролью ADMIN",
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Список пользователей",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Отказано в доступе"),
-            @ApiResponse(responseCode = "401", description = "JWT отсутствует или невалидный")
-        }
-    )
-    @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<UserInfoResponse> getAll(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "3") int size
-    ) {
-        return userService.getAll(page, size);
     }
 }
 

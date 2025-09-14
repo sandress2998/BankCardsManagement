@@ -2,10 +2,14 @@ package com.example.bankcards.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 public class Card {
     @Id
@@ -31,7 +35,7 @@ public class Card {
     private double balance = 0;
 
     @JsonManagedReference("encryption")
-    @OneToOne(mappedBy = "card", optional = false, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "card", optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     private CardEncryptionKey encryptionKey;
 
     public Card() {}
@@ -41,58 +45,6 @@ public class Card {
         this.encryptedNumber = encryptedNumber;
         this.validityPeriod = validityPeriod;
         this.status = Status.ACTIVE;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getEncryptedNumber() {
-        return encryptedNumber;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public LocalDate getValidityPeriod() {
-        return validityPeriod;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public void setValidityPeriod(LocalDate validityPeriod) {
-        this.validityPeriod = validityPeriod;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setBalance(long balance) {
-        this.balance = balance;
-    }
-
-    public void setEncryptionKey(CardEncryptionKey encryptionKey) {
-        this.encryptionKey = encryptionKey;
-    }
-
-    public void setEncryptedNumber(String encryptedNumber) {
-        this.encryptedNumber = encryptedNumber;
-    }
-
-    public CardEncryptionKey getEncryptionKey() {
-        return encryptionKey;
     }
 
     public enum Status {

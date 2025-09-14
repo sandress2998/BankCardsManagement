@@ -3,33 +3,34 @@ package com.example.bankcards.service.impl;
 import com.example.bankcards.entity.CardEncryptionKey;
 import com.example.bankcards.repository.CardEncryptionKeyRepository;
 import com.example.bankcards.service.CardSecurityService;
-import com.example.bankcards.util.EncryptionAES;
-import com.example.bankcards.util.HmacUtils;
+import com.example.bankcards.util.security.EncryptionAES;
+import com.example.bankcards.util.security.HmacUtils;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 
 import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 
 @Service
+@RequiredArgsConstructor
 public class CardSecurityServiceImpl implements CardSecurityService {
 
+    private final Environment env;
     private final CardEncryptionKeyRepository cardEncryptionKeyRepository;
 
-    public final SecretKeySpec masterKey; // Мастер-ключ из настроек
-    public final SecretKey hmacKey;
+    public SecretKeySpec masterKey; // Мастер-ключ из настроек
+    public SecretKey hmacKey;
 
-    public CardSecurityServiceImpl(
-            Environment env,
-           CardEncryptionKeyRepository cardEncryptionKeyRepository
-    ) {
-        this.cardEncryptionKeyRepository = cardEncryptionKeyRepository;
-
+    @PostConstruct
+    void init() {
         String masterKeyStr = env.getRequiredProperty("security.card.number.key");
         String hmacKeyStr   = env.getRequiredProperty("security.card.number.hmac");
 

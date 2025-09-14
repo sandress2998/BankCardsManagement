@@ -49,6 +49,10 @@ dependencies {
     //Swagger (OpenAPI)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 
+    // Lombok
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation ("org.springframework.security:spring-security-test")

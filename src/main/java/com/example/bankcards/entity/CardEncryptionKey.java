@@ -2,15 +2,19 @@ package com.example.bankcards.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
 @Entity(name = "card_encryption_key")
 public class CardEncryptionKey {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
     @JsonBackReference("encryption")
     @OneToOne(optional = false)
     @JoinColumn(name = "card_id", nullable = false, unique = true)
@@ -24,24 +28,4 @@ public class CardEncryptionKey {
     }
 
     public CardEncryptionKey() {}
-
-    public UUID getId() {
-        return id;
-    }
-
-    public Card getCard() {
-        return card;
-    }
-
-    public String getEncryptedKey() {
-        return encryptedKey;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
-    }
-
-    public void setEncryptedKey(String encryptedKey) {
-        this.encryptedKey = encryptedKey;
-    }
 }

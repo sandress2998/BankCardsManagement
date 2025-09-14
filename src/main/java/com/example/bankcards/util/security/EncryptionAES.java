@@ -1,4 +1,4 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.security;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

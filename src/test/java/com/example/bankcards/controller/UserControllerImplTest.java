@@ -1,38 +1,21 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.AdminRequest;
+import com.example.bankcards.dto.RoleRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.security.JwtFilter;
-import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -42,7 +25,6 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +45,7 @@ public class UserControllerImplTest {
     @MockBean
     private UserService userService;
 
-    private AdminRequest validAdminRequest;
+    private RoleRequest validAdminRequest;
     private JwtResponse jwtResponse;
     private UserInfoResponse userInfoResponse;
     private List<UserInfoResponse> usersList;
@@ -72,7 +54,7 @@ public class UserControllerImplTest {
 
     @BeforeEach
     void setup() {
-        validAdminRequest = new AdminRequest("admin-secret");
+        validAdminRequest = new RoleRequest(User.Role.ADMIN, "admin-secret");
         jwtResponse = new JwtResponse("mock-jwt-token");
         userInfoResponse = new UserInfoResponse(
             UUID.fromString(userId),
@@ -89,8 +71,8 @@ public class UserControllerImplTest {
     // Тесты для PATCH /api/user/admin
     @Test
     @WithMockUser(username = userId, roles = {"USER"})
-    void requestAdmin_ReturnsJwt_OnValidSecret() throws Exception {
-        when(userService.requestAdmin(any(AdminRequest.class))).thenReturn(jwtResponse);
+    void requestRole_ReturnsJwt_OnValidSecret() throws Exception {
+        when(userService.requestRole(any(RoleRequest.class))).thenReturn(jwtResponse);
 
         mockMvc.perform(patch("/api/user/admin")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,13 +82,13 @@ public class UserControllerImplTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.jwt").value("mock-jwt-token"));
 
-        verify(userService).requestAdmin(any(AdminRequest.class));
+        verify(userService).requestRole(any(RoleRequest.class));
     }
 
     @Test
     @WithMockUser(username = userId, roles = {"USER"})
-    void requestAdmin_ReturnsAccessDenied_OnInvalidSecret() throws Exception {
-        when(userService.requestAdmin(any(AdminRequest.class)))
+    void requestRole_ReturnsAccessDenied_OnInvalidSecret() throws Exception {
+        when(userService.requestRole(any(RoleRequest.class)))
             .thenThrow(new AccessDeniedException("Invalid admin secret"));
 
         mockMvc.perform(patch("/api/user/admin")

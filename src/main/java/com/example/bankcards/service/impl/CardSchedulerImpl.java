@@ -4,7 +4,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.service.CardScheduler;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +12,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CardSchedulerImpl implements CardScheduler {
-    @Autowired
-    private CardRepository cardRepository;
+    private final CardRepository cardRepository;
 
     // раз в сутки
     @Scheduled(fixedRate = 60000 * 60 * 24)

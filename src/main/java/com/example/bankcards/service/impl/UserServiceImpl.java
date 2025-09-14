@@ -1,6 +1,6 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.AdminRequest;
+import com.example.bankcards.dto.RoleRequest;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.UserInfoResponse;
 import com.example.bankcards.entity.User;
@@ -10,8 +10,10 @@ import com.example.bankcards.exception.UnauthorizedException;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.service.UserService;
-import com.example.bankcards.util.BCryptEncoder;
+import com.example.bankcards.util.security.BCryptEncoder;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,20 +28,17 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final String hashedSecretForAdmin;
+    private String hashedSecretForAdmin;
 
-    UserRepository userRepository;
-    JwtService jwtService;
+    private final Environment env;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public UserServiceImpl(
-        Environment env,
-        UserRepository userRepository,
-        JwtService jwtService
-    ) {
-        hashedSecretForAdmin = env.getProperty("security.admin.secret");;
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
+    @PostConstruct
+    void init() {
+        this.hashedSecretForAdmin = env.getProperty("security.admin.secret");
     }
 
     @Override
@@ -70,14 +69,34 @@ public class UserServiceImpl implements UserService {
     /** Запрос на получение статуса ADMIN */
     @Transactional
     @Override
-    public JwtResponse requestAdmin(AdminRequest request) {
-        System.out.println("secret: " + hashedSecretForAdmin);
+    public JwtResponse requestRole(RoleRequest request) {
+        if (request.role() == User.Role.ADMIN) {
+            return requestAdmin(request.secret());
+        }
+
         Authentication authData = getAuthData();
         UUID id = UUID.fromString(authData.getName());
         checkIsExistById(id);
         String jwt = authData.getCredentials().toString();
 
         if (BCryptEncoder.matches(request.secret(), hashedSecretForAdmin)) {
+            userRepository.updateRole(id, User.Role.ADMIN);
+
+            String updatedJwt = jwtService.changeRoleInJwt(jwt, User.Role.ADMIN);
+            return new JwtResponse(updatedJwt);
+        } else {
+            throw new AccessDeniedException("Wrong password");
+        }
+    }
+
+    @Transactional
+    JwtResponse requestAdmin(String rawPassword) {
+        Authentication authData = getAuthData();
+        UUID id = UUID.fromString(authData.getName());
+        checkIsExistById(id);
+        String jwt = authData.getCredentials().toString();
+
+        if (BCryptEncoder.matches(rawPassword, hashedSecretForAdmin)) {
             userRepository.updateRole(id, User.Role.ADMIN);
 
             String updatedJwt = jwtService.changeRoleInJwt(jwt, User.Role.ADMIN);

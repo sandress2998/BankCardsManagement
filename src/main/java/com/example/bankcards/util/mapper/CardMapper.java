@@ -1,4 +1,4 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.mapper;
 
 import com.example.bankcards.dto.CardCreateResponse;
 import com.example.bankcards.dto.CardInfoResponse;

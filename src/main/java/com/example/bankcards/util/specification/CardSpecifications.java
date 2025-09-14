@@ -1,4 +1,4 @@
-package com.example.bankcards.util;
+package com.example.bankcards.util.specification;
 
 import com.example.bankcards.dto.AdminCardFilter;
 import com.example.bankcards.dto.CardFilter;
@@ -7,7 +7,6 @@ import com.example.bankcards.entity.CardUpdateStatusRequest;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.UUID;
